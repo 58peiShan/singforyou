@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>潮約之歌</title>
+<meta name="description" content="百合・奇幻・戀愛視覺小說《潮約之歌》">
+<meta name="theme-color" content="#06122a">
+<meta name="color-scheme" content="dark">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="潮約之歌">
+<meta name="format-detection" content="telephone=no">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/stage.css">
+<link rel="stylesheet" href="css/screens.css">
+<script>
+  // 只有在網站上（http/https）才掛 manifest 與離線快取；雙擊 index.html（file://）時略過，避免主控台錯誤。
+  if (/^https?:$/.test(location.protocol)) {
+    var m = document.createElement('link');
+    m.rel = 'manifest';
+    m.href = 'manifest.webmanifest';
+    document.head.appendChild(m);
+  }
+</script>
+</head>
+<body>
+<div id="game" class="booting">
+
+  <!-- ===== 舞台 ===== -->
+  <div id="stage" aria-live="off">
+    <div id="shaker">
+      <div id="bg-layer">
+        <div class="bg-slot" id="bg0"></div>
+        <div class="bg-slot" id="bg1"></div>
+      </div>
+      <div id="sprite-layer"><div id="sprite-area"></div></div>
+      <div id="cg-layer"></div>
+    </div>
+    <div id="fx-fade"></div>
+    <div id="fx-flash"></div>
+
+    <div id="ui-layer">
+      <div id="choices" role="menu"></div>
+      <div id="textbox" class="empty">
+        <div id="face" aria-hidden="true"></div>
+        <div id="nameplate"></div>
+        <div id="text" aria-live="polite"></div>
+        <div id="next-mark" aria-hidden="true"></div>
+      </div>
+      <nav id="quickmenu" aria-label="快捷選單">
+          <button type="button" data-q="save">存檔</button>
+          <button type="button" data-q="load">讀檔</button>
+          <button type="button" data-q="log">紀錄</button>
+          <button type="button" data-q="auto">自動</button>
+          <button type="button" data-q="skip">快進</button>
+          <button type="button" data-q="hide">隱藏</button>
+          <button type="button" data-q="config">設定</button>
+          <button type="button" data-q="title">標題</button>
+      </nav>
+    </div>
+    <div id="mode-badge" aria-hidden="true"></div>
+    <div id="card" aria-live="polite"></div>
+  </div>
+
+  <!-- ===== 標題畫面 ===== -->
+  <section id="title-screen" class="screen" aria-label="標題畫面">
+    <div class="sea-scene" aria-hidden="true">
+      <div class="sky"></div>
+      <div class="stars"></div>
+      <div class="moon"></div>
+      <div class="moon-path"></div>
+      <div class="wave w1"></div>
+      <div class="wave w2"></div>
+      <div class="wave w3"></div>
+      <div class="bubbles"></div>
+    </div>
+    <div class="title-wrap">
+      <header class="title-head">
+        <h1 class="game-title"><span class="bracket">《</span>潮約之歌<span class="bracket">》</span></h1>
+        <p class="game-sub">百合・奇幻・戀愛視覺小說</p>
+        <div class="endings" id="ending-badges" aria-label="已達成的結局"></div>
+      </header>
+      <nav class="title-menu" id="title-menu">
+        <button type="button" data-t="new">開始遊戲</button>
+        <button type="button" data-t="continue">繼續</button>
+        <button type="button" data-t="load">讀取存檔</button>
+        <button type="button" data-t="gallery">CG 圖庫</button>
+        <button type="button" data-t="side"><span class="side-name">柱現篇</span></button>
+        <button type="button" data-t="config">設定</button>
+      </nav>
+    </div>
+    <p class="title-foot" id="title-foot"></p>
+  </section>
+
+  <div id="overlays"></div>
+  <div id="toast" role="status" aria-live="polite"></div>
+</div>
+
+<noscript><p style="color:#fff;padding:2em">請開啟 JavaScript 才能遊玩。</p></noscript>
+
+<script src="data/script.js"></script>
+<script>
+  // 測試用：index.html?data=test 會改讀 data/test.js（存檔也分開存），正式遊玩不需要。
+  (function () {
+    var m = /[?&]data=([\w.-]+)/.exec(location.search);
+    if (m && m[1] !== 'script') {
+      window.VN_DATA_TAG = m[1];
+      document.write('<script src="data/' + m[1] + '.js"><\/script>');
+    }
+  })();
+</script>
+<script src="js/util.js"></script>
+<script src="js/persist.js"></script>
+<script src="js/art.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/stage.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
