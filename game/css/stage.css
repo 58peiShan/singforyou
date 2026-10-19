@@ -131,25 +131,6 @@
 .sprite .pose > .layer.new { animation: layer-in .35s ease; }
 @keyframes layer-out { to { opacity: 0; } }
 @keyframes layer-in { from { opacity: 0; } }
-.sprite .chip {
-  position: absolute;
-  left: 50%;
-  top: 9%;
-  transform: translateX(-50%);
-  white-space: nowrap;
-  padding: 3px 11px 4px;
-  border-radius: 999px;
-  font-family: var(--font-sans);
-  font-size: clamp(10px, 1.6vh, 13px);
-  letter-spacing: .12em;
-  color: var(--pearl);
-  background: rgba(6, 18, 40, .55);
-  border: 1px solid rgba(255, 255, 255, .22);
-  -webkit-backdrop-filter: blur(4px);
-  backdrop-filter: blur(4px);
-}
-.sprite .chip b { font-weight: 600; color: var(--nc, var(--seaglass)); margin-right: .35em; }
-
 /* ---------- CG ---------- */
 #cg-layer { position: absolute; inset: 0; z-index: 3; opacity: 0; visibility: hidden; transition: opacity .7s ease, visibility 0s linear .7s; }
 #cg-layer.on { opacity: 1; visibility: visible; transition: opacity .7s ease, visibility 0s; }
@@ -360,6 +341,7 @@
 #quickmenu button:focus-visible { outline: 2px solid var(--seaglass); }
 #quickmenu button.active { color: var(--seaglass); text-shadow: 0 0 10px rgba(147, 216, 204, .7); }
 #ui-layer.no-text #quickmenu { opacity: .0; pointer-events: none; }
+#qm-toggle { display: none; }  /* 齒輪按鈕只在手機版出現，見檔案最後 */
 
 /* 模式提示 */
 #mode-badge {
@@ -480,14 +462,12 @@
     --face-size: clamp(60px, 17vw, 84px);
     --text-size: clamp(16px, 4.3vw, 21px);
   }
-  #textbox { padding: 28px 18px 54px; border-radius: 20px; }
+  #textbox { padding: 28px 18px 22px; border-radius: 20px; }
   #textbox.has-face { padding-left: 18px; padding-top: 36px; }
   #face { left: 14px; top: 0; bottom: auto; transform: translateY(-62%) scale(.9); }
   #face.on { transform: translateY(-62%); }
   #nameplate { left: 16px; }
   #textbox.has-face #nameplate { left: calc(14px + var(--face-size) + 10px); transform: translateY(-50%); }
-  #quickmenu { left: calc(10px + var(--safe-l)); right: calc(10px + var(--safe-r)); bottom: calc(var(--tb-bottom) + 2px); justify-content: space-between; }
-  #quickmenu button { flex: 1 1 0; min-width: 0; padding: 0 2px; font-size: 13px; letter-spacing: .04em; }
   .cg-view .cg-main { top: 4%; bottom: calc(var(--tb-h) + var(--tb-bottom) + 2%); left: 2%; right: 2%; }
   .cg-view .cg-main img { object-fit: contain; }
   .cg-view .cg-main .cg-card { width: 100%; height: auto; aspect-ratio: 16 / 9; border-radius: 10px; box-shadow: 0 16px 50px rgba(0, 0, 0, .55); }
@@ -510,20 +490,93 @@
   #nameplate { padding: 4px 16px 5px; left: 20px; }
   #textbox.has-face #nameplate { left: calc(20px + var(--face-size) + 14px); }
   #text { line-height: 1.7; }
-  #quickmenu {
-    top: calc(6px + var(--safe-t));
-    bottom: auto;
-    right: calc(8px + var(--safe-r));
-    padding: 0 4px;
-    border-radius: 14px;
-    background: rgba(6, 18, 40, .45);
-    -webkit-backdrop-filter: blur(8px);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, .1);
-  }
-  #quickmenu button { min-width: 44px; padding: 0 6px; font-size: 12px; letter-spacing: .05em; }
   #mode-badge { left: calc(14px + var(--safe-l)); transform: none; top: calc(26px + var(--safe-t)); }
   #choices { gap: 8px; }
   #choices button { min-height: 44px; padding: 6px 22px; }
   .bg-name { display: none; }
+}
+
+/* ---------- 手機（直式＋矮橫式）：快捷選單收進右上角齒輪 ---------- */
+@media (orientation: portrait), (orientation: landscape) and (max-height: 520px) {
+  #qm-toggle {
+    appearance: none;
+    -webkit-appearance: none;
+    position: absolute;
+    top: calc(8px + var(--safe-t));
+    right: calc(8px + var(--safe-r));
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, .18);
+    background: rgba(6, 18, 40, .5);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    color: rgba(245, 240, 232, .85);
+    cursor: pointer;
+    pointer-events: auto;
+    transition: opacity .3s, color .2s, background .2s;
+  }
+  #qm-toggle svg {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: transform .35s var(--ease);
+  }
+  #qm-toggle:focus-visible { outline: 2px solid var(--seaglass); }
+  #ui-layer.qm-open #qm-toggle { color: var(--seaglass); background: rgba(20, 60, 96, .8); }
+  #ui-layer.qm-open #qm-toggle svg { transform: rotate(60deg); }
+  #ui-layer.no-text #qm-toggle { opacity: 0; pointer-events: none; }
+
+  #quickmenu {
+    top: calc(8px + var(--safe-t) + 44px + 8px);
+    right: calc(8px + var(--safe-r));
+    bottom: auto;
+    left: auto;
+    z-index: 3;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2px;
+    min-width: 148px;
+    max-height: calc(100% - 70px - var(--safe-t));
+    overflow-y: auto;
+    padding: 6px;
+    border-radius: 16px;
+    background: linear-gradient(180deg, rgba(16, 41, 79, .95), rgba(6, 18, 42, .96));
+    border: 1px solid rgba(255, 255, 255, .15);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, .45);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px);
+    pointer-events: none;
+    transition: opacity .2s, transform .2s var(--ease), visibility 0s .2s;
+  }
+  #ui-layer.qm-open #quickmenu {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    pointer-events: auto;
+    transition: opacity .2s, transform .2s var(--ease);
+  }
+  #ui-layer.no-text #quickmenu { opacity: 0; visibility: hidden; pointer-events: none; }
+  #quickmenu button {
+    min-width: 0;
+    min-height: 44px;
+    padding: 0 16px;
+    text-align: left;
+    font-size: 15px;
+    letter-spacing: .14em;
+    color: rgba(245, 240, 232, .85);
+  }
+}
+@media (orientation: landscape) and (max-height: 520px) {
+  #quickmenu { grid-template-columns: 1fr 1fr; min-width: 240px; }
 }

@@ -460,6 +460,11 @@
       h = openOverlay(box);
       setTimeout(function () { var b = box.querySelector('button'); if (b) b.focus({ preventScroll: true }); }, 30);
     },
+    // 手機版：齒輪按鈕收合的快捷選單
+    closeQm: function () {
+      document.getElementById('ui-layer').classList.remove('qm-open');
+      document.getElementById('qm-toggle').setAttribute('aria-expanded', 'false');
+    },
     askTitle: function () {
       UI.confirm('要回到標題畫面嗎？\n沒有存檔的進度會遺失。', '回到標題', '取消').then(function (ok) {
         if (ok) { closeAll(true); E.toTitle(); }
@@ -475,7 +480,8 @@
 
       stage.addEventListener('click', function (e) {
         if (!E.active || stack.length) return;
-        if (e.target.closest('#quickmenu, #choices')) return;
+        if (e.target.closest('#quickmenu, #choices, #qm-toggle')) return;
+        if (ui.classList.contains('qm-open')) { UI.closeQm(); return; }
         if (ui.classList.contains('hidden-ui')) { ui.classList.remove('hidden-ui'); return; }
         E.advance();
       });
@@ -490,10 +496,20 @@
         else if (e.deltaY > 20 && !ui.classList.contains('hidden-ui')) E.advance();
       }, { passive: true });
 
+      var qmToggle = document.getElementById('qm-toggle');
+      qmToggle.addEventListener('click', function (e) {
+        e.stopPropagation();
+        if (!E.active) return;
+        var open = !ui.classList.contains('qm-open');
+        ui.classList.toggle('qm-open', open);
+        qmToggle.setAttribute('aria-expanded', String(open));
+      });
+
       document.getElementById('quickmenu').addEventListener('click', function (e) {
         e.stopPropagation();
         var b = e.target.closest('button');
         if (!b || !E.active) return;
+        UI.closeQm();
         switch (b.dataset.q) {
           case 'save': UI.openSaveLoad('save'); break;
           case 'load': UI.openSaveLoad('load'); break;
@@ -524,6 +540,7 @@
           E.advance();
         } else if (k === 'Escape') {
           e.preventDefault();
+          if (ui.classList.contains('qm-open')) { UI.closeQm(); return; }
           if (ui.classList.contains('hidden-ui')) { ui.classList.remove('hidden-ui'); return; }
           UI.openPause();
         } else if (/^[1-9]$/.test(k)) {

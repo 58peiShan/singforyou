@@ -8,7 +8,7 @@
   var dom = {};
   var bgFront = 0;           // 目前顯示中的背景槽
   var bgName = null;
-  var sprites = [];          // [{c, e, f, node, real, chip}]
+  var sprites = [];          // [{c, e, f, node, real}]
   var forms = {};            // 角色 → 形態
   var cgState = null;
   var faded = false;
@@ -96,19 +96,11 @@
       node.classList.add('layer');
       if (!L.placeholder && node.tagName === 'IMG') {
         node.addEventListener('load', function () { S.layout(false); });
-        node.addEventListener('error', function () { s.real = false; S._chip(s); setTimeout(function () { S.layout(false); }, 30); });
+        node.addEventListener('error', function () { s.real = false; setTimeout(function () { S.layout(false); }, 30); });
       }
       s.real = !L.placeholder;
       return node;
     },
-    _chip: function (s) {
-      if (s.real) { if (s.chip) { s.chip.remove(); s.chip = null; } return; }
-      if (!s.chip) { s.chip = el('div.chip'); s.node.appendChild(s.chip); }
-      s.chip.innerHTML = '';
-      s.chip.appendChild(el('b', { text: s.c }));
-      s.chip.appendChild(document.createTextNode((s.f ? s.f + '・' : '') + s.e));
-    },
-
     show: function (list, instant) {
       var added = [];
       list.forEach(function (it) {
@@ -120,7 +112,6 @@
         s.pose = el('div.pose');
         s.node.appendChild(s.pose);
         s.pose.appendChild(S._makeLayer(s));
-        S._chip(s);
         sprites.push(s);
         dom.area.appendChild(s.node);
         added.push(s);
@@ -158,7 +149,6 @@
         if (old) old.remove();
         s.pose.appendChild(nn);
       }
-      S._chip(s);
       S.layout(!!instant);
     },
 

@@ -14,6 +14,10 @@
   var CPS = [12, 18, 25, 32, 40, 52, 68, 90, 130, Infinity];
   var AUTO_PER_CHAR = [95, 80, 66, 55, 46, 38, 31, 25, 20, 15];
   var ENDING_LABEL = { '伴侶': '靈魂伴侶結局', '朋友': '普通朋友結局', 'BAD': 'BAD END' };
+  // 長句分頁：優先在句尾斷開，其次逗號；下一頁的開頭不放這些標點
+  var BREAK_STRONG = /[。！？!?…」』）]/;
+  var BREAK_WEAK = /[，、；：,;]/;
+  var NO_LEAD = /[。！？!?…」』）、，；：,;]/;
   VN.ENDING_LABEL = ENDING_LABEL;
 
   var dom = {};
@@ -85,6 +89,9 @@
     backlog: [],
     autoTimer: 0,
     active: false,          // 是否在遊戲畫面中
+    pages: null,            // 目前這句拆成的頁（對話框放不下時才會有多頁）
+    page: 0,
+    lineCls: '',
 
     init: function () {
       D = window.GAME_DATA;
@@ -98,6 +105,12 @@
       D.files.forEach(function (f, i) {
         keyIndex[f.key] = i;
         (f.route === 'side' ? sideOrder : mainOrder).push(i);
+      });
+      // 轉螢幕或改視窗大小時，依新的對話框尺寸重新分頁目前這句
+      var repageTimer = 0;
+      window.addEventListener('resize', function () {
+        clearTimeout(repageTimer);
+        repageTimer = setTimeout(E.repage, 200);
       });
     },
     get data() { return D; },
@@ -148,6 +161,7 @@
     enter: function () {
       E.active = true;
       VN.UI.hideTitle();
+      VN.UI.closeQm();
       dom.ui.classList.remove('hidden-ui');
     },
     toTitle: function () {
@@ -368,8 +382,54 @@
         if (E.mode.skip) { E.setSkip(false); VN.toast('遇到未讀的文字，已停止快進'); }
         E.updateModes();
       }
-      Typer.show(op.text, op.k === 'd' ? 'dlg' : op.k === 'i' ? 'inner' : 'narr', function () { E.afterTyped(); });
+      E.lineCls = op.k === 'd' ? 'dlg' : op.k === 'i' ? 'inner' : 'narr';
+      E.pages = E.paginate(op.text, E.lineCls);
+      E.page = 0;
+      Typer.show(E.pages[0], E.lineCls, function () { E.afterTyped(); });
       return WAIT;
+    },
+    /** 對話框放不下的長句，拆成好幾頁（優先在句尾斷開） */
+    paginate: function (text, cls) {
+      var t = dom.text;
+      var chars = Array.from(text);
+      t.className = cls;
+      var fits = function (a, b) {
+        t.textContent = chars.slice(a, b).join('');
+        t.appendChild(VN.el('span.next-mark'));
+        return t.scrollHeight <= t.clientHeight + 1;
+      };
+      if (!t.clientHeight || fits(0, chars.length)) { t.innerHTML = ''; return [text]; }
+      var pages = [], start = 0;
+      while (start < chars.length) {
+        // 找出這一頁最多放得下幾個字
+        var lo = start + 1, hi = chars.length, best = start + 1;
+        while (lo <= hi) {
+          var mid = (lo + hi) >> 1;
+          if (fits(start, mid)) { best = mid; lo = mid + 1; } else hi = mid - 1;
+        }
+        var cut = best;
+        if (best < chars.length) {
+          cut = E._breakAt(chars, start, best, BREAK_STRONG, 0.4) || E._breakAt(chars, start, best, BREAK_WEAK, 0.5) || best;
+          while (cut < best && NO_LEAD.test(chars[cut])) cut++;
+        }
+        pages.push(chars.slice(start, cut).join(''));
+        start = cut;
+      }
+      t.innerHTML = '';
+      return pages;
+    },
+    /** 在 [start, end) 的後段找最後一個斷句點，找不到回傳 0 */
+    _breakAt: function (chars, start, end, re, minRatio) {
+      var min = start + Math.max(1, Math.floor((end - start) * minRatio));
+      for (var i = end; i > min; i--) if (re.test(chars[i - 1])) return i;
+      return 0;
+    },
+    repage: function () {
+      if (!E.active || E.waiting !== 'text' || !E.pages) return;
+      var rest = E.pages.slice(E.page).join('');
+      E.pages = E.pages.slice(0, E.page).concat(E.paginate(rest, E.lineCls));
+      Typer.show(E.pages[E.page], E.lineCls, function () { E.afterTyped(); });
+      Typer.finish();
     },
     renderLine: function (line) {
       dom.textbox.classList.remove('off', 'empty');
@@ -392,7 +452,7 @@
       if (E.skipping() && E.curOp && E.canSkip(E.curOp)) {
         E.autoTimer = setTimeout(function () { if (gen === E.gen && E.waiting === 'text') E.proceed(); }, 45);
       } else if (E.mode.auto) {
-        var n = Array.from((E.curOp && E.curOp.text) || '').length;
+        var n = Array.from((E.pages && E.pages[E.page]) || '').length;
         var ms = Math.max(1300, 700 + n * AUTO_PER_CHAR[VN.clamp(P.settings.autoSpeed, 1, 10) - 1]);
         E.autoTimer = setTimeout(function () { if (gen === E.gen && E.waiting === 'text' && E.mode.auto && !VN.UI.overlayOpen()) E.proceed(); else if (E.mode.auto) E.afterTyped(); }, ms);
       }
@@ -408,6 +468,12 @@
     proceed: function () {
       if (E.waiting !== 'text') return;
       clearTimeout(E.autoTimer);
+      // 長句還有下一頁：先顯示下一頁，這句還沒讀完
+      if (E.pages && E.page < E.pages.length - 1) {
+        E.page += 1;
+        Typer.show(E.pages[E.page], E.lineCls, function () { E.afterTyped(); });
+        return;
+      }
       if (E.curOp) P.markRead(E.curOp.id);
       E.waiting = null;
       E.run();
