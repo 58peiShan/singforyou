@@ -16,7 +16,7 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.resolve(__dirname, '..');
-const SIDE_DIR = '柱現篇';                 // 支線資料夾名稱（也是標題畫面按鈕文字）
+const SIDE_DIR = '人魚篇';                 // 支線資料夾名稱（也是標題畫面按鈕文字）
 const DEFAULT_PROTAGONIST = '孫承完';      // 角色設定.md 找不到「主角」時的預設
 const STATS = ['心動', '信任', '採息'];
 const ENDINGS = ['伴侶', '朋友', 'BAD'];

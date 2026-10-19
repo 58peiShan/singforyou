@@ -290,7 +290,7 @@
       await Stage.card('ending', { code: op.code, name: op.name, label: ENDING_LABEL[op.code] || op.code });
       if (gen !== E.gen) return WAIT;
       E.toTitle();
-      if (first) setTimeout(function () { VN.toast('「' + (D.sideRoute || '柱現篇') + '」已解鎖！可以從標題畫面進入。', 4200); }, 900);
+      if (first) setTimeout(function () { VN.toast('「' + (D.sideRoute || '人魚篇') + '」已解鎖！可以從標題畫面進入。', 4200); }, 900);
       return WAIT;
     },
     endOfFile: async function (gen) {
@@ -309,10 +309,10 @@
         E.hideFaceAndNames();
         await Stage.card('tbc', { small: '故事', text: '未完待續', note: '點擊回到標題畫面' });
       } else if (!E.justEnded) {
-        // 柱現篇：檔案最後沒有【…完】時才補一張結束卡
+        // 人魚篇：檔案最後沒有【…完】時才補一張結束卡
         E.hideTextbox();
         E.hideFaceAndNames();
-        await Stage.card('tbc', { small: D.sideRoute || '柱現篇', text: f.title, note: '點擊返回' });
+        await Stage.card('tbc', { small: D.sideRoute || '人魚篇', text: f.title, note: '點擊返回' });
       }
       if (gen !== E.gen) return false;
       var side = st.route === 'side';
@@ -367,7 +367,7 @@
         else Stage.setExpr(op.who, op.expr, fast);
       }
       Stage.highlight(op.k === 'd' ? op.who : null);
-      // 主角說話時顯示頭像；主線的內心話也是主角視角，所以也顯示（柱現篇的內心話不是她的）
+      // 主角說話時顯示頭像；主線的內心話也是主角視角，所以也顯示（人魚篇的內心話不是她的）
       if ((op.k === 'd' && op.who === hero) || (op.k === 'i' && st.route === 'main')) Stage.showFace(hero, st.face, fast);
       else Stage.hideFace();
       st.line = { who: op.k === 'd' ? op.who : null, text: op.text, k: op.k };

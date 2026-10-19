@@ -1,4 +1,4 @@
-/* 介面：標題畫面、存讀檔、設定、CG 圖庫、對話紀錄、柱現篇、暫停選單、確認框、輸入處理 */
+/* 介面：標題畫面、存讀檔、設定、CG 圖庫、對話紀錄、人魚篇、暫停選單、確認框、輸入處理 */
 (function () {
   'use strict';
   var VN = window.VN;
@@ -82,7 +82,7 @@
         var z = (4 + rnd() * 10).toFixed(1);
         bub.appendChild(el('i', { style: { left: (rnd() * 100).toFixed(1) + '%', width: z + 'px', height: z + 'px', animationDuration: (8 + rnd() * 10).toFixed(1) + 's', animationDelay: (-rnd() * 14).toFixed(1) + 's' } }));
       }
-      var sideName = (E.data && E.data.sideRoute) || '柱現篇';
+      var sideName = (E.data && E.data.sideRoute) || '人魚篇';
       dom.title.querySelector('.side-name').textContent = sideName;
       dom.title.querySelector('#title-menu').addEventListener('click', function (e) {
         var b = e.target.closest('button');
@@ -187,7 +187,7 @@
         node.appendChild(thumb);
         var meta = el('div.meta', null, [
           el('div.row1', null, [el('b', { text: label }), el('span', { text: s ? VN.fmtTime(s.time) : '' })]),
-          el('div.chapter', { text: s ? (s.route === 'side' ? '【' + ((E.data && E.data.sideRoute) || '柱現篇') + '】' : '') + (s.chapter || '') : (mode === 'save' ? '點選以存檔' : '—') }),
+          el('div.chapter', { text: s ? (s.route === 'side' ? '【' + ((E.data && E.data.sideRoute) || '人魚篇') + '】' : '') + (s.chapter || '') : (mode === 'save' ? '點選以存檔' : '—') }),
           el('div.preview', { text: s ? s.preview || '' : '' }),
         ]);
         node.appendChild(meta);
@@ -416,9 +416,9 @@
       requestAnimationFrame(function () { body.scrollTop = body.scrollHeight; });
     },
 
-    // ============================================================ 柱現篇
+    // ============================================================ 人魚篇
     openSide: function () {
-      var name = (E.data && E.data.sideRoute) || '柱現篇';
+      var name = (E.data && E.data.sideRoute) || '人魚篇';
       if (!P.anyEnding()) { VN.toast('達成任一結局後，就能解鎖「' + name + '」。'); return; }
       var h = {};
       var body = el('div.panel-body');

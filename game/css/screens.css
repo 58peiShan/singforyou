@@ -1,5 +1,5 @@
 /* ============================================================
-   標題畫面與各種選單（存讀檔、設定、圖庫、紀錄、柱現篇）
+   標題畫面與各種選單（存讀檔、設定、圖庫、紀錄、人魚篇）
    ============================================================ */
 .screen {
   position: absolute;
@@ -353,7 +353,7 @@
 .log-empty, .empty-state { padding: 40px 10px; text-align: center; color: var(--ink-soft); line-height: 2; font-size: 15px; }
 .empty-state .big { display: block; font-size: 20px; letter-spacing: .25em; color: var(--pearl); margin-bottom: .6em; }
 
-/* ---------- 柱現篇 ---------- */
+/* ---------- 人魚篇 ---------- */
 .side-list { display: flex; flex-direction: column; gap: 10px; max-width: 720px; margin: 0 auto; }
 .side-item {
   display: flex;
