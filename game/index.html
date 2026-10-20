@@ -72,19 +72,28 @@
 
   <!-- ===== 標題畫面 ===== -->
   <section id="title-screen" class="screen" aria-label="標題畫面">
-    <div class="sea-scene" aria-hidden="true">
-      <div class="sky"></div>
-      <div class="stars"></div>
-      <div class="moon"></div>
-      <div class="moon-path"></div>
-      <div class="wave w1"></div>
-      <div class="wave w2"></div>
-      <div class="wave w3"></div>
-      <div class="bubbles"></div>
+    <!-- 故事書封面：羊皮紙書邊＋金框；封面圖放 assets/ui/封面.jpg，沒有時用動態海景 -->
+    <div class="cover" aria-hidden="true">
+      <div class="cover-art">
+        <div class="sea-scene">
+          <div class="sky"></div>
+          <div class="stars"></div>
+          <div class="moon"></div>
+          <div class="moon-path"></div>
+          <div class="wave w1"></div>
+          <div class="wave w2"></div>
+          <div class="wave w3"></div>
+          <div class="bubbles"></div>
+        </div>
+      </div>
+      <div class="cover-scrim"></div>
+      <div class="cover-frame"></div>
     </div>
+    <div class="bookmark" aria-hidden="true"></div>
     <div class="title-wrap">
       <header class="title-head">
         <h1 class="game-title"><span class="bracket">《</span>潮約之歌<span class="bracket">》</span></h1>
+        <span class="title-flourish" aria-hidden="true"></span>
         <p class="game-sub">－我想知道妳所有的秘密</p>
         <div class="endings" id="ending-badges" aria-label="已達成的結局"></div>
       </header>

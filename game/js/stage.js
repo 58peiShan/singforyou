@@ -297,7 +297,7 @@
       c.className = '';
       c.innerHTML = '';
       var inner = el('div.card-inner');
-      var line = '<svg class="c-line" viewBox="0 0 320 14" preserveAspectRatio="none"><path d="M0,7 C27,0 53,14 80,7 S133,0 160,7 S213,14 240,7 S293,0 320,7" stroke="rgba(147,216,204,.7)" stroke-width="1.5" fill="none"/><circle cx="160" cy="7" r="3.5" fill="#f5f0e8"/></svg>';
+      var line = '<svg class="c-line" viewBox="0 0 320 14" preserveAspectRatio="none"><path d="M0,7 C27,0 53,14 80,7 S133,0 160,7 S213,14 240,7 S293,0 320,7" stroke="#e2b85a" stroke-width="1.5" fill="none"/><path d="M160,1.5 L165.5,7 L160,12.5 L154.5,7 Z" fill="#f6dc8c" stroke="#5e3e0b" stroke-width=".8"/></svg>';
       if (kind === 'title') {
         var parts = String(data.text).split(/[\s　]+/);
         if (parts.length > 1) inner.appendChild(el('span.c-small', { text: parts[0] }));

@@ -5,6 +5,8 @@
   var VN = window.VN;
 
   var ctx = null, bgmBus = null, seBus = null, reverbIn = null, noiseBuf = null;
+  var seOut = null;        // 劇情音效目前要接到哪裡：平常是 seBus，「（室內）」時是隔窗濾波
+  var seMuffled = false;
   var unlocked = false;
   var useGraph = /^https?:$/.test(location.protocol); // file:// 下不能把 <audio> 接進 WebAudio
   var cur = null;          // 目前的音樂軌
@@ -29,6 +31,7 @@
     seBus = ctx.createGain();
     bgmBus.connect(comp);
     seBus.connect(comp);
+    seOut = seBus;
     // 殘響
     var conv = ctx.createConvolver();
     var len = Math.floor(ctx.sampleRate * 2.6);
@@ -372,16 +375,28 @@
       if (cur) cur.stop(fade == null ? 0.4 : fade);
       cur = null;
     },
+    /** 劇情音效。「名稱（室內）」＝隔著窗戶聽到的：變小聲、高音被玻璃擋掉（有專門的「名稱（室內）.mp3」就照原樣播） */
     playSe: function (name) {
       if (!unlocked || !ctx) return;
-      var url = VN.Assets.se(name);
-      if (url) return playSeFile(url);
-      var fn = SE[name] || SE[VN.baseName(name)];
+      var exact = VN.Assets.url('se', name);
+      if (exact) return playSeFile(exact);
+      var m = MUFFLE_RE.exec(name);
+      var base = m ? name.slice(0, m.index).trim() : name;
+      var url = VN.Assets.se(base);
+      if (url) return playSeFile(url, !!m);
+      var fn = SE[base] || SE[VN.baseName(base)];
       if (!fn) {
-        var guess = [[/浪|潮/, '海浪'], [/水|跳|潛/, '水花'], [/火/, '營火'], [/雷/, '雷'], [/雨/, '雨'], [/步|跑|走/, '腳步'], [/門/, '開門'], [/人|群|喧/, '人群'], [/玻璃|碎|破/, '玻璃碎裂']];
-        for (var i = 0; i < guess.length; i++) if (guess[i][0].test(name)) { fn = SE[guess[i][1]]; break; }
+        var guess = [[/撥.*弦/, '撥和弦'], [/吉他|和弦|弦/, '刷和弦'], [/浪|潮/, '海浪'], [/水|跳|潛/, '水花'], [/火/, '營火'], [/雷/, '雷'], [/雨/, '雨'], [/步|跑|走/, '腳步'], [/門/, '開門'], [/人|群|喧/, '人群'], [/玻璃|碎|破/, '玻璃碎裂']];
+        for (var i = 0; i < guess.length; i++) if (guess[i][0].test(base)) { fn = SE[guess[i][1]]; break; }
       }
-      if (fn) { try { fn(ctx.currentTime + 0.02); } catch (e) { /* 忽略 */ } }
+      if (!fn) return;
+      var mf = m ? muffleOut() : null;
+      seOut = mf ? mf.node : seBus;
+      seMuffled = !!mf;
+      try { fn(ctx.currentTime + 0.02); } catch (e) { /* 忽略 */ }
+      seOut = seBus;
+      seMuffled = false;
+      if (mf) setTimeout(mf.done, 12000);
     },
     applyVolumes: applyVolumes,
     /** 除錯用：目前的音訊狀態 */
@@ -392,6 +407,19 @@
     blip: function () {
       if (!unlocked || !ctx) return;
       voice(seBus, ctx.currentTime + 0.01, 84, 'sine', 0.25, 0.005, 0.4, null, 0, 0, null);
+    },
+    /** 介面回饋音：hover（滑過按鈕）、click（按下按鈕）、page（點對話框翻下一句）。設定裡可以關掉，音量跟著音效音量 */
+    ui: function (kind) {
+      if (!unlocked || !ctx) return;
+      var s = VN.Persist && VN.Persist.g ? VN.Persist.settings : null;
+      if (s && s.uiSound === false) return;
+      var now = performance.now();
+      if (now - (uiLast[kind] || 0) < (UI_GAP[kind] || 40)) return;   // 連續觸發時不要疊成一團
+      uiLast[kind] = now;
+      var url = VN.Assets.se(UI_FILE[kind]);
+      if (url) return playSeFile(url);
+      var fn = UI_SYNTH[kind];
+      if (fn) { try { fn(ctx.currentTime + 0.005); } catch (e) { /* 忽略 */ } }
     },
     suspend: function () {
       if (ctx && ctx.state === 'running' && ctx.suspend) ctx.suspend();
@@ -404,22 +432,163 @@
     },
   });
 
-  function playSeFile(url) {
+  function playSeFile(url, muffled) {
     var a = new Audio(url);
+    var level = muffled ? MUFFLE_GAIN : 1;
     if (useGraph && ctx) {
-      try { var s = ctx.createMediaElementSource(a); s.connect(seBus); } catch (e) { a.volume = vol.se; }
-    } else a.volume = VN.clamp(vol.se, 0, 1);
+      try {
+        var s = ctx.createMediaElementSource(a);
+        if (muffled) {
+          var mf = muffleOut();
+          s.connect(mf.node);
+          a.addEventListener('ended', mf.done);
+          a.addEventListener('error', mf.done);
+        } else s.connect(seBus);
+      } catch (e) { a.volume = VN.clamp(vol.se * level, 0, 1); }
+    } else a.volume = VN.clamp(vol.se * level, 0, 1);   // 雙擊開啟（file://）時無法濾波，只能變小聲
     var p = a.play();
     if (p && p.catch) p.catch(function () {});
   }
+
+  // ------------------------------------------------------------ 隔著窗戶：玻璃和牆擋掉高音，只剩悶悶的低頻，再帶一點室內的共鳴
+  var MUFFLE_RE = /[（(](室內|隔窗)[）)]\s*$/;
+  var MUFFLE_GAIN = 0.5;
+  function muffleOut() {
+    var g = ctx.createGain(); g.gain.value = MUFFLE_GAIN;
+    var lp1 = ctx.createBiquadFilter(); lp1.type = 'lowpass'; lp1.frequency.value = 850; lp1.Q.value = 0.7;
+    var lp2 = ctx.createBiquadFilter(); lp2.type = 'lowpass'; lp2.frequency.value = 1500; lp2.Q.value = 0.5;
+    var room = ctx.createBiquadFilter(); room.type = 'peaking'; room.frequency.value = 280; room.Q.value = 1; room.gain.value = 3;
+    g.connect(lp1); lp1.connect(lp2); lp2.connect(room); room.connect(seBus);
+    var done = function () { try { g.disconnect(); lp1.disconnect(); lp2.disconnect(); room.disconnect(); } catch (e) { /* 已斷開 */ } };
+    return { node: g, done: done };
+  }
+
+  // ------------------------------------------------------------ 介面回饋音（放了 se/介面滑過.mp3 等檔案就改用檔案）
+  var uiLast = {};
+  var UI_GAP = { hover: 45, click: 30, page: 50 };
+  var UI_FILE = { hover: '介面滑過', click: '介面點擊', page: '介面翻頁' };
+  var UI_SYNTH = {
+    // 音樂盒般的清脆一聲，音高在五聲音階裡隨機，掃過整排按鈕會像撥琴
+    hover: function (t) {
+      var m = [86, 88, 91, 93, 95][Math.floor(Math.random() * 5)];
+      voice(seBus, t, m, 'sine', 0.05, 0.003, 0.24, null, 0, 0, null);
+      voice(seBus, t, m + 12, 'sine', 0.012, 0.002, 0.09, null, 0, 0, null);
+    },
+    // 兩個音往上的「叮鈴」
+    click: function (t) {
+      voice(seBus, t, 88, 'sine', 0.075, 0.003, 0.3, null, 0, 0, null);
+      voice(seBus, t, 76, 'triangle', 0.025, 0.004, 0.18, null, 0, 0, 1800);
+      voice(seBus, t + 0.065, 95, 'sine', 0.06, 0.003, 0.5, null, 0, 0, null);
+    },
+    // 翻書頁的輕柔沙沙聲，加一點點木頭般的觸感
+    page: function (t) {
+      var n = nz(t, 0.16, 'bandpass', 2400, 0.7);
+      n.f.frequency.setValueAtTime(1600, t);
+      n.f.frequency.exponentialRampToValueAtTime(4200, t + 0.12);
+      n.g.gain.setValueAtTime(0.0001, t);
+      n.g.gain.exponentialRampToValueAtTime(0.13, t + 0.025);
+      n.g.gain.exponentialRampToValueAtTime(0.0001, t + 0.15);
+      var o = ctx.createOscillator(); o.type = 'sine';
+      o.frequency.setValueAtTime(520, t); o.frequency.exponentialRampToValueAtTime(300, t + 0.05);
+      var g = ctx.createGain(); env(g, t, 0.002, 0.035, 0.06);
+      o.connect(g); g.connect(seBus); o.start(t); o.stop(t + 0.08);
+    },
+  };
+
+  // ------------------------------------------------------------ 吉他：Karplus-Strong 撥弦合成
+  // 一條弦 = 一段長度等於一個週期的延遲線，填入雜訊後反覆「平均＋衰減」，就會變成會自然衰減的弦音
+  var pluckCache = {};
+  var seVerb = null;
+  function pluckBuffer(midi, variant) {
+    var key = midi + ':' + variant;
+    if (pluckCache[key]) return pluckCache[key];
+    var sr = ctx.sampleRate;
+    var len = Math.floor(sr * 3.2);
+    var buf = ctx.createBuffer(1, len, sr);
+    var out = buf.getChannelData(0);
+    var N = Math.max(2, Math.round(sr / mtof(midi) + 0.5));   // 「和下一個樣本平均」會讓週期少半個樣本，這裡補回來
+    var line = new Float32Array(N);
+    var a = variant ? 0.72 : 0.55, lp = 0, mean = 0, peak = 0, i;
+    for (i = 0; i < N; i++) { lp += a * ((Math.random() * 2 - 1) - lp); line[i] = lp; mean += lp; }   // 濾過的雜訊：音色比較溫暖
+    mean /= N;
+    for (i = 0; i < N; i++) { line[i] -= mean; peak = Math.max(peak, Math.abs(line[i])); }
+    for (i = 0; i < N; i++) line[i] /= peak || 1;
+    var rho = 0.9972, p = 0;
+    for (i = 0; i < len; i++) {
+      var q = p + 1 === N ? 0 : p + 1;
+      var y = line[p];
+      line[p] = rho * 0.5 * (y + line[q]);
+      out[i] = y;
+      p = q;
+    }
+    var fade = Math.floor(sr * 0.25);
+    for (i = 0; i < fade; i++) out[len - 1 - i] *= i / fade;
+    pluckCache[key] = buf;
+    return buf;
+  }
+  /** 吉他的輸出：琴身共鳴（低頻峰）＋一點空氣感＋小房間殘響 */
+  function guitarOut(sec) {
+    if (!seVerb) {
+      var conv = ctx.createConvolver();
+      var len = Math.floor(ctx.sampleRate * 1.1);
+      var ir = ctx.createBuffer(2, len, ctx.sampleRate);
+      for (var ch = 0; ch < 2; ch++) {
+        var d = ir.getChannelData(ch);
+        for (var i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 3);
+      }
+      conv.buffer = ir;
+      seVerb = ctx.createGain();
+      seVerb.gain.value = 0.16;
+      seVerb.connect(conv);
+      conv.connect(seBus);
+    }
+    var g = ctx.createGain();
+    var body = ctx.createBiquadFilter(); body.type = 'peaking'; body.frequency.value = 190; body.Q.value = 1.1; body.gain.value = 4;
+    var air = ctx.createBiquadFilter(); air.type = 'peaking'; air.frequency.value = 2600; air.Q.value = 0.8; air.gain.value = 2.5;
+    var top = ctx.createBiquadFilter(); top.type = 'lowpass'; top.frequency.value = 6000;
+    g.connect(body); body.connect(air); air.connect(top);
+    top.connect(seOut);
+    if (!seMuffled) top.connect(seVerb);
+    setTimeout(function () { try { g.disconnect(); body.disconnect(); air.disconnect(); top.disconnect(); } catch (e) { /* 已斷開 */ } }, (sec + 4) * 1000);
+    return g;
+  }
+  /** 刷一下：chord 是六條弦（低音 E → 高音 E）的 MIDI 音高，null = 不彈；dir 'd' 下刷、'u' 上刷（只掃高音那幾條） */
+  function strum(out, ring, t, chord, dir, amp, spread) {
+    var strings = [];
+    for (var s = 0; s < 6; s++) if (chord[s] != null) strings.push(s);
+    if (dir === 'u') strings = strings.slice(-4).reverse();
+    strings.forEach(function (s, k) {
+      var tt = t + k * spread + Math.random() * 0.004;
+      var prev = ring[s];
+      if (prev) prev.gain.setTargetAtTime(0.0001, tt, 0.015);   // 同一條弦再被彈到時，先前的振動會被止住
+      var src = ctx.createBufferSource();
+      src.buffer = pluckBuffer(chord[s], Math.random() < 0.5 ? 0 : 1);
+      var g = ctx.createGain();
+      g.gain.value = amp * (dir === 'u' ? 0.55 : 1) * (1 - k * 0.04);
+      src.connect(g); g.connect(out); src.start(tt);
+      src.onended = function () { try { g.disconnect(); } catch (e) { /* 已斷開 */ } };
+      ring[s] = g;
+    });
+    // 撥片刮過弦的「刷」聲
+    var n = nz(t, 0.09, 'bandpass', dir === 'u' ? 4200 : 3200, 1.2);
+    env(n.g, t, 0.004, amp * 0.22, 0.07 + strings.length * spread);
+  }
+  // 和弦指法（G 大調，和〈營火之歌〉同調）
+  var GTR = {
+    G: [43, 47, 50, 55, 59, 67],
+    C: [null, 48, 52, 55, 60, 64],
+    D: [null, null, 50, 57, 62, 66],
+  };
 
   // ------------------------------------------------------------ 佔位音效
   function nz(t, dur, filterType, freq, q) {
     var src = ctx.createBufferSource(); src.buffer = noiseBuf;
     var f = ctx.createBiquadFilter(); f.type = filterType; f.frequency.value = freq; if (q) f.Q.value = q;
     var g = ctx.createGain();
-    src.connect(f); f.connect(g); g.connect(seBus);
-    src.start(t, Math.random() * 2, dur + 0.1);
+    src.connect(f); f.connect(g); g.connect(seOut);
+    src.loop = true;   // 雜訊只有 4 秒，從隨機位置開始時要循環，長的音效才不會中途斷掉
+    src.start(t, Math.random() * 2);
+    src.stop(t + dur + 0.1);
     return { g: g, f: f };
   }
   var SE = {
@@ -439,7 +608,7 @@
         var f0 = 700 + Math.random() * 1400;
         o.frequency.setValueAtTime(f0, tt); o.frequency.exponentialRampToValueAtTime(f0 * 1.8, tt + 0.06);
         var g = ctx.createGain(); env(g, tt, 0.003, 0.08, 0.07);
-        o.connect(g); g.connect(seBus); o.start(tt); o.stop(tt + 0.1);
+        o.connect(g); g.connect(seOut); o.start(tt); o.stop(tt + 0.1);
       }
     },
     '營火': function (t) {
@@ -451,13 +620,30 @@
         env(c.g, tt, 0.002, 0.15 + Math.random() * 0.25, 0.025);
       }
     },
+    // 雨：寬頻的雨幕＋打在地上的嘶嘶聲＋大小雨滴；寫成「雨（室內）」時，隔窗濾波只留下悶悶的雨幕，再加上雨點敲玻璃的細碎聲
     '雨': function (t) {
-      var n = nz(t, 3.2, 'bandpass', 2600, 0.5);
-      n.g.gain.setValueAtTime(0.0001, t); n.g.gain.linearRampToValueAtTime(0.35, t + 0.6); n.g.gain.setValueAtTime(0.35, t + 2.4); n.g.gain.linearRampToValueAtTime(0.0001, t + 3.2);
-      for (var i = 0; i < 30; i++) {
-        var tt = t + Math.random() * 3;
-        var c = nz(tt, 0.02, 'highpass', 4000);
-        env(c.g, tt, 0.001, 0.08, 0.015);
+      var D = 4.2;
+      var swell = function (g, peak) {
+        g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(peak, t + 0.6);
+        g.gain.setValueAtTime(peak, t + 2.8); g.gain.linearRampToValueAtTime(0.0001, t + D);
+      };
+      swell(nz(t, D, 'bandpass', 1100, 0.3).g, 0.3);
+      swell(nz(t, D, 'bandpass', 2600, 0.5).g, 0.26);
+      var i, tt;
+      for (i = 0; i < 40; i++) {
+        tt = t + Math.random() * (D - 0.8);
+        env(nz(tt, 0.02, 'highpass', 4000).g, tt, 0.001, 0.08, 0.015);
+      }
+      for (i = 0; i < 14; i++) {
+        tt = t + Math.random() * (D - 0.8);
+        env(nz(tt, 0.05, 'bandpass', 900 + Math.random() * 900, 2.5).g, tt, 0.002, 0.12, 0.04);
+      }
+      if (!seMuffled) return;
+      for (i = 0; i < 12; i++) {   // 窗玻璃本身在房間裡響，所以不經過悶音濾波
+        tt = t + 0.3 + Math.random() * (D - 1.2);
+        var o = ctx.createOscillator(); o.type = 'sine'; o.frequency.value = 2400 + Math.random() * 1600;
+        var g = ctx.createGain(); env(g, tt, 0.001, 0.012 + Math.random() * 0.01, 0.03);
+        o.connect(g); g.connect(seBus); o.start(tt); o.stop(tt + 0.06);
       }
     },
     '雷': function (t) {
@@ -472,7 +658,7 @@
         var o = ctx.createOscillator(); o.type = 'sine';
         o.frequency.setValueAtTime(95, tt); o.frequency.exponentialRampToValueAtTime(48, tt + 0.1);
         var g = ctx.createGain(); env(g, tt, 0.004, 0.45, 0.12);
-        o.connect(g); g.connect(seBus); o.start(tt); o.stop(tt + 0.15);
+        o.connect(g); g.connect(seOut); o.start(tt); o.stop(tt + 0.15);
         var n = nz(tt, 0.06, 'bandpass', 1800, 1);
         env(n.g, tt, 0.002, 0.12, 0.05);
       }
@@ -483,7 +669,7 @@
       var v = ctx.createOscillator(); v.frequency.value = 23; var vg = ctx.createGain(); vg.gain.value = 18; v.connect(vg); vg.connect(o.frequency);
       var f = ctx.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 1100; f.Q.value = 3;
       var g = ctx.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(0.18, t + 0.1); g.gain.linearRampToValueAtTime(0.0001, t + 0.85);
-      o.connect(f); f.connect(g); g.connect(seBus); o.start(t); v.start(t); o.stop(t + 0.9); v.stop(t + 0.9);
+      o.connect(f); f.connect(g); g.connect(seOut); o.start(t); v.start(t); o.stop(t + 0.9); v.stop(t + 0.9);
       var c = nz(t + 0.9, 0.06, 'bandpass', 2400, 2); env(c.g, t + 0.9, 0.002, 0.4, 0.06);
     },
     '人群': function (t) {
@@ -496,7 +682,7 @@
         o.frequency.setValueAtTime(f0, tt); o.frequency.linearRampToValueAtTime(f0 * (0.8 + Math.random() * 0.5), tt + 0.25);
         var f = ctx.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 700 + Math.random() * 900; f.Q.value = 4;
         var g = ctx.createGain(); env(g, tt, 0.04, 0.035, 0.22);
-        o.connect(f); f.connect(g); g.connect(seBus); o.start(tt); o.stop(tt + 0.3);
+        o.connect(f); f.connect(g); g.connect(seOut); o.start(tt); o.stop(tt + 0.3);
       }
     },
     '玻璃碎裂': function (t) {
@@ -506,8 +692,20 @@
         var tt = t + Math.random() * 0.6;
         var o = ctx.createOscillator(); o.type = 'sine'; o.frequency.value = 2500 + Math.random() * 4000;
         var g = ctx.createGain(); env(g, tt, 0.001, 0.07, 0.15 + Math.random() * 0.3);
-        o.connect(g); g.connect(seBus); o.start(tt); o.stop(tt + 0.5);
+        o.connect(g); g.connect(seOut); o.start(tt); o.stop(tt + 0.5);
       }
+    },
+    // 隨手刷一小段：G → C → D → G（下、下上的民謠節奏），最後一下讓它響著
+    '刷和弦': function (t) {
+      var e = 60 / 96 / 2;   // 八分音符
+      var seq = [[0, 'G', 'd', 1], [2, 'G', 'd', 0.8], [3, 'G', 'u', 0.75], [4, 'C', 'd', 0.95], [6, 'C', 'd', 0.8], [7, 'C', 'u', 0.75], [8, 'D', 'd', 0.9], [9, 'D', 'u', 0.7], [10, 'G', 'd', 1]];
+      var out = guitarOut(seq[seq.length - 1][0] * e + 3.2);
+      var ring = [];
+      seq.forEach(function (x) { strum(out, ring, t + x[0] * e, GTR[x[1]], x[2], 0.15 * x[3], x[2] === 'u' ? 0.009 : 0.012); });
+    },
+    // 慢慢撥下一個 G 和弦，讓它一直響
+    '撥和弦': function (t) {
+      strum(guitarOut(3.4), [], t, GTR.G, 'd', 0.17, 0.032);
     },
   };
 })();

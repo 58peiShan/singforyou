@@ -227,7 +227,12 @@
           else Au.playBgm(op.name);
           return null;
         case 'se':
-          if (!fast) op.names.forEach(function (n) { Au.playSe(n); });
+          if (!fast) op.names.forEach(function (n, i) {
+            var d = op.delays ? op.delays[i] : 0;
+            if (!d) { Au.playSe(n); return; }
+            // 延遲播放；這段時間內讀檔、回標題或開始快進就不播了
+            setTimeout(function () { if (gen === E.gen && E.active && !E.skipping()) Au.playSe(n); }, d * 1000);
+          });
           return null;
         case 'trans': return E.opTrans(op, fast);
         case 'shake': if (!fast) Stage.shake(); return null;
@@ -527,7 +532,7 @@
     pick: function (op, opt, key) {
       P.markChoice(key);
       E.waiting = null;
-      Au.blip();
+      Au.ui('click');
       E.backlog.push({ who: null, text: '▶ ' + opt.text, k: 'c' });
       E.applyEffects(opt.eff);
       setTimeout(function () { E.hideChoices(); }, 160);

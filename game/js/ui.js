@@ -39,6 +39,22 @@
     if (!stack.length && E.mode.auto && E.waiting === 'text') E.afterTyped();
   }
   function closeAll(instant) { stack.slice().reverse().forEach(function (h) { closeOverlay(h, instant); }); }
+  /** 滑鼠滑過（或用鍵盤移到）root 裡符合 sel 的控制項時，播放回饋音 */
+  function hoverSound(root, sel) {
+    root.addEventListener('pointerover', function (e) {
+      if (e.pointerType && e.pointerType !== 'mouse' && e.pointerType !== 'pen') return;   // 觸控沒有「滑過」
+      var t = e.target.closest(sel);
+      if (!t || !root.contains(t) || t.disabled) return;
+      if (e.relatedTarget && t.contains(e.relatedTarget)) return;   // 還在同一顆按鈕裡移動
+      Au.ui('hover');
+    });
+    root.addEventListener('focusin', function (e) {
+      var t = e.target.closest(sel);
+      if (!t || t.disabled) return;
+      try { if (!e.target.matches(':focus-visible')) return; } catch (x) { return; }
+      Au.ui('hover');
+    });
+  }
   function panel(title, sub, body, h) {
     var close = el('button.btn.icon.close-x', { type: 'button', 'aria-label': '關閉', text: '×' });
     var head = el('div.panel-head', null, [el('h2', null, [title, sub ? el('small', { text: sub }) : null]), close]);
@@ -82,15 +98,32 @@
         var z = (4 + rnd() * 10).toFixed(1);
         bub.appendChild(el('i', { style: { left: (rnd() * 100).toFixed(1) + '%', width: z + 'px', height: z + 'px', animationDuration: (8 + rnd() * 10).toFixed(1) + 's', animationDelay: (-rnd() * 14).toFixed(1) + 's' } }));
       }
+      UI.initCover();
       var sideName = (E.data && E.data.sideRoute) || '人魚篇';
       dom.title.querySelector('.side-name').textContent = sideName;
-      dom.title.querySelector('#title-menu').addEventListener('click', function (e) {
+      var menu = dom.title.querySelector('#title-menu');
+      hoverSound(menu, 'button');
+      menu.addEventListener('click', function (e) {
         var b = e.target.closest('button');
         if (!b || b.disabled) return;
+        Au.ui('click');
         UI.titleAction(b.dataset.t);
       });
       var built = E.data && E.data.builtAt ? VN.fmtTime(E.data.builtAt) : '';
       document.getElementById('title-foot').textContent = built ? '劇本更新於 ' + built : '';
+    },
+    /** 封面圖：assets/ui/封面.*（手機直拿時改用 封面_直.*，沒有就裁切同一張） */
+    initCover: function () {
+      var url = A.ui('封面');
+      if (!url) return;
+      var art = dom.title.querySelector('.cover-art');
+      var img = el('img', { src: url, alt: '', draggable: 'false', decoding: 'async' });
+      var portrait = A.ui('封面_直');
+      var node = img;
+      if (portrait) node = el('picture', null, [el('source', { media: '(orientation: portrait)', srcset: portrait }), img]);
+      img.addEventListener('error', function () { node.remove(); dom.title.classList.remove('has-cover'); });
+      art.appendChild(node);
+      dom.title.classList.add('has-cover');
     },
     titleAction: function (t) {
       switch (t) {
@@ -281,6 +314,8 @@
       row('音樂音量', bgm.input, bgm.val);
       var se = slider(0, 100, s.seVol, pct, function (v) { s.seVol = v; Au.applyVolumes(); }, function (v) { P.setSetting('seVol', v); Au.blip(); }, '音效音量');
       row('音效音量', se.input, se.val);
+      var uis = sw(s.uiSound !== false, function (on) { P.setSetting('uiSound', on); Au.ui('click'); }, '介面音效');
+      row('介面音效', uis.node, el('span.val', { style: { flexBasis: 'auto' }, text: '' }));
 
       var preview = el('div.set-preview', { 'aria-hidden': 'true' });
       var speedFmt = function (v) { return v >= 10 ? '瞬間' : String(v); };
@@ -318,7 +353,7 @@
         UI.confirm('要把設定恢復成預設值嗎？', '恢復', '取消').then(function (ok) {
           if (!ok) return;
           var keepFs = s.fullscreen;
-          Object.assign(s, { bgmVol: 70, seVol: 80, textSpeed: 6, autoSpeed: 5, skipReadOnly: true, fullscreen: keepFs });
+          Object.assign(s, { bgmVol: 70, seVol: 80, uiSound: true, textSpeed: 6, autoSpeed: 5, skipReadOnly: true, fullscreen: keepFs });
           P.flush();
           Au.applyVolumes();
           h.ref.close();
@@ -328,6 +363,8 @@
       grid.appendChild(el('div.set-actions', null, [reset]));
 
       var pnl = panel('設定', null, body, h);
+      hoverSound(pnl, 'button, .switch, input[type=range]');
+      pnl.addEventListener('click', function (e) { if (e.target.closest('button, .switch')) Au.ui('click'); });
       h.ref = openOverlay(pnl, { onClose: function () { cancelAnimationFrame(demoRaf); P.flush(); dom.fsInput = null; } });
     },
 
@@ -478,12 +515,17 @@
       var unlock = function () { Au.unlock(); };
       ['pointerdown', 'keydown', 'touchend'].forEach(function (t) { window.addEventListener(t, unlock, { capture: true, passive: true }); });
 
+      // 玩家點對話框（或按鍵、滾輪）前進：有字可以翻時才出翻頁聲
+      var advance = function () {
+        if (E.waiting === 'text') Au.ui('page');
+        E.advance();
+      };
       stage.addEventListener('click', function (e) {
         if (!E.active || stack.length) return;
         if (e.target.closest('#quickmenu, #choices, #qm-toggle')) return;
         if (ui.classList.contains('qm-open')) { UI.closeQm(); return; }
         if (ui.classList.contains('hidden-ui')) { ui.classList.remove('hidden-ui'); return; }
-        E.advance();
+        advance();
       });
       stage.addEventListener('contextmenu', function (e) {
         e.preventDefault();
@@ -493,7 +535,7 @@
       stage.addEventListener('wheel', function (e) {
         if (!E.active || stack.length) return;
         if (e.deltaY < -20) UI.openBacklog();
-        else if (e.deltaY > 20 && !ui.classList.contains('hidden-ui')) E.advance();
+        else if (e.deltaY > 20 && !ui.classList.contains('hidden-ui')) advance();
       }, { passive: true });
 
       var qmToggle = document.getElementById('qm-toggle');
@@ -537,7 +579,7 @@
           e.preventDefault();
           if (e.repeat && E.waiting !== 'text') return;
           if (ui.classList.contains('hidden-ui')) { ui.classList.remove('hidden-ui'); return; }
-          E.advance();
+          if (e.repeat) E.advance(); else advance();   // 按住不放快速前進時不連續出聲
         } else if (k === 'Escape') {
           e.preventDefault();
           if (ui.classList.contains('qm-open')) { UI.closeQm(); return; }

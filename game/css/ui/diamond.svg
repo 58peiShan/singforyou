@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="14" viewBox="0 0 48 14">
+  <!-- 分隔線中央的小菱形裝飾 -->
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f6dc8c"/>
+      <stop offset="1" stop-color="#9a6a1c"/>
+    </linearGradient>
+  </defs>
+  <path d="M24,1 L30,7 L24,13 L18,7 Z" fill="url(#g)" stroke="#5e3e0b" stroke-width=".8"/>
+  <circle cx="11" cy="7" r="1.8" fill="#b5862e"/>
+  <circle cx="37" cy="7" r="1.8" fill="#b5862e"/>
+  <circle cx="4" cy="7" r="1.1" fill="#b5862e"/>
+  <circle cx="44" cy="7" r="1.1" fill="#b5862e"/>
+</svg>

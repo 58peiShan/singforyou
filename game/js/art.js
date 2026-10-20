@@ -29,6 +29,7 @@
     face: function (c, e) { return this.url('face', c + '_' + (e || '普通')) || this.url('face', c + '_普通') || this.url('face', c); },
     bgm: function (name) { return this.url('bgm', name) || this.url('bgm', baseName(name)); },
     se: function (name) { return this.url('se', name) || this.url('se', baseName(name)); },
+    ui: function (name) { return this.url('ui', name); },
   });
   function baseName(n) { return String(n || '').replace(/[（(][^）)]*[）)]\s*$/, '').trim(); }
   VN.baseName = baseName;
@@ -706,7 +707,7 @@
       card.appendChild(el('div.label', null, [
         el('span.num', { text: 'CG ' + id }),
         el('span.name', { text: title || '' }),
-        opts.mini ? null : el('span.deco', { html: '<svg viewBox="0 0 240 10" preserveAspectRatio="none" style="width:100%;height:100%"><path d="M0,5 C20,0 40,10 60,5 S100,0 120,5 S160,10 180,5 S220,0 240,5" stroke="rgba(255,245,225,.8)" stroke-width="1.5" fill="none"/><circle cx="120" cy="5" r="3" fill="#fff"/></svg>' }),
+        opts.mini ? null : el('span.deco', { html: '<svg viewBox="0 0 240 10" preserveAspectRatio="none" style="width:100%;height:100%"><path d="M0,5 C20,0 40,10 60,5 S100,0 120,5 S160,10 180,5 S220,0 240,5" stroke="#9a6a1c" stroke-width="1.5" fill="none"/><circle cx="120" cy="5" r="3" fill="#9a6a1c"/></svg>' }),
       ]));
     }
     return card;

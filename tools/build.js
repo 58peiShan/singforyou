@@ -29,6 +29,7 @@ const ASSET_TYPES = {
   cg: ['.jpg', '.jpeg', '.png', '.webp'],
   bgm: ['.mp3', '.ogg'],
   se: ['.mp3', '.ogg'],
+  ui: ['.jpg', '.jpeg', '.png', '.webp'],   // 封面.jpg（直式手機可另放 封面_直.jpg）
 };
 const KNOWN_COMMANDS = ['背景', '立繪', '形態', '退場', 'CG', 'CG結束', '音樂', '音效', '轉場', '震動', '數值', '旗標', '如果', '跳至', '選擇', '結局', '…完'];
 
@@ -394,10 +395,20 @@ function parseFile(file, ctx) {
           break;
         }
         case '音效': {
-          const names = splitList(arg).map(normName);
-          if (!names.length) { err(ln, '【音效】後面要寫音效名稱'); break; }
+          const items = splitList(arg).map(normName);
+          if (!items.length) { err(ln, '【音效】後面要寫音效名稱'); break; }
+          // 「breath（1.2秒後）」= 這一行開始播之後，再過 1.2 秒才播
+          const names = [], delays = [];
+          for (const it of items) {
+            const m = it.match(/^(.+?)\s*[（(]\s*(\d+(?:\.\d+)?)\s*秒後\s*[）)]$/);
+            const name = m ? m[1].trim() : it;
+            const d = m ? parseFloat(m[2]) : 0;
+            if (d > 15) warn(ln, `【音效】「${name}」要等 ${d} 秒才播，玩家可能早就讀到後面了`);
+            names.push(name);
+            delays.push(d);
+          }
           names.forEach((n) => ctx.used.se.add(n));
-          push({ t: 'se', names });
+          push(delays.some(Boolean) ? { t: 'se', names, delays } : { t: 'se', names });
           break;
         }
         case '轉場': {
@@ -659,6 +670,7 @@ function main() {
   console.log(`共 ${nLines} 句台詞、${Object.keys(labels).length} 個標籤、${cgs.length} 張 CG`);
   const label = { bg: '背景', sprites: '立繪', face: '頭像', cg: 'CG', bgm: '音樂', se: '音效' };
   console.log('素材（已放入／劇本用到）：' + Object.keys(need).map((t) => `${label[t]} ${need[t].filter((n) => has(t, n)).length}/${need[t].length}`).join('、') + '　缺的會用佔位圖／佔位音樂');
+  console.log(`封面：${assets.ui['封面'] ? `game/assets/ui/${assets.ui['封面']}` : '（沒有 game/assets/ui/封面.jpg，使用動態海景）'}${assets.ui['封面_直'] ? `，直式：${assets.ui['封面_直']}` : ''}`);
   if (args.listAssets) {
     for (const t of Object.keys(need)) {
       console.log(`\n[${label[t]}] game/assets/${t}/`);

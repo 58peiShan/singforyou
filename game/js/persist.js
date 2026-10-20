@@ -12,7 +12,8 @@
       fullscreen: false,  // 偏好：開始遊戲時自動進入全螢幕
       bgmVol: 70,
       seVol: 80,
-      textSpeed: 6,       // 1～10（10 = 立即顯示）
+      uiSound: true,      // 介面回饋音（滑過按鈕、點對話框）
+      textSpeed: 6,      // 1～10（10 = 立即顯示）
       autoSpeed: 5,       // 1～10（越大越快）
       skipReadOnly: true,
     };

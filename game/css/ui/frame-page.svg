@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="240" height="240" viewBox="0 0 240 240">
+  <!-- 故事書頁框（九宮格切片 64）：外框雙線、內框凹角、四角卷草紋 -->
+  <defs>
+    <linearGradient id="gd" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f6dc8c"/>
+      <stop offset=".45" stop-color="#c08d30"/>
+      <stop offset="1" stop-color="#8f6216"/>
+    </linearGradient>
+    <g id="c">
+      <path d="M5,-1 L11,5 L5,11 L-1,5 Z" fill="url(#gd)" stroke="#5e3e0b" stroke-width=".8"/>
+      <path d="M25,18 Q25,25 32,25 Q25,25 25,32 Q25,25 18,25 Q25,25 25,18 Z" fill="url(#gd)" stroke="#6b470f" stroke-width=".6"/>
+      <g fill="none" stroke="#9a6a1c" stroke-width="1.5" stroke-linecap="round">
+        <path d="M31,20 C37,13 49,13 53,19 C56,24 51,29 47,26.5 C44,24.5 46,21 49,22"/>
+        <path d="M20,31 C13,37 13,49 19,53 C24,56 29,51 26.5,47 C24.5,44 21,46 22,49"/>
+      </g>
+      <g fill="#b5862e">
+        <circle cx="58" cy="18" r="1.6"/>
+        <circle cx="18" cy="58" r="1.6"/>
+      </g>
+    </g>
+  </defs>
+  <rect x="5" y="5" width="230" height="230" fill="none" stroke="#8f6418" stroke-width="2.4"/>
+  <rect x="7" y="7" width="226" height="226" fill="none" stroke="#f3d98f" stroke-width="1"/>
+  <path d="M26,12 H214 A14,14 0 0 0 228,26 V214 A14,14 0 0 0 214,228 H26 A14,14 0 0 0 12,214 V26 A14,14 0 0 0 26,12 Z" fill="none" stroke="#a8781f" stroke-width="1.2"/>
+  <use xlink:href="#c" href="#c"/>
+  <use xlink:href="#c" href="#c" transform="translate(240,0) scale(-1,1)"/>
+  <use xlink:href="#c" href="#c" transform="translate(0,240) scale(1,-1)"/>
+  <use xlink:href="#c" href="#c" transform="translate(240,240) scale(-1,-1)"/>
+</svg>

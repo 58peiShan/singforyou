@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="50" viewBox="0 0 160 50">
+  <!-- 金色緞帶（左右各切 36，中段可拉長）：燕尾、摺角、金屬光澤 -->
+  <defs>
+    <linearGradient id="tail" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e6bd60"/>
+      <stop offset=".55" stop-color="#b8862c"/>
+      <stop offset="1" stop-color="#8a5f14"/>
+    </linearGradient>
+    <linearGradient id="band" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff4c8"/>
+      <stop offset=".2" stop-color="#f6dc8c"/>
+      <stop offset=".55" stop-color="#e8c167"/>
+      <stop offset=".82" stop-color="#f3d27c"/>
+      <stop offset="1" stop-color="#b8862c"/>
+    </linearGradient>
+  </defs>
+  <path d="M0,16 H34 V46 H0 L10,31 Z" fill="url(#tail)" stroke="#5e3e0b" stroke-width="1"/>
+  <path d="M160,16 H126 V46 H160 L150,31 Z" fill="url(#tail)" stroke="#5e3e0b" stroke-width="1"/>
+  <path d="M24,40 H34 V46 Z" fill="#5e3e0b"/>
+  <path d="M136,40 H126 V46 Z" fill="#5e3e0b"/>
+  <rect x="24" y="4" width="112" height="36" fill="url(#band)" stroke="#6b470f" stroke-width="1"/>
+  <path d="M25,7.5 H135" stroke="#fffbe8" stroke-opacity=".8" stroke-width="1"/>
+  <path d="M25,36.5 H135" stroke="#9a6a1c" stroke-opacity=".7" stroke-width="1"/>
+</svg>

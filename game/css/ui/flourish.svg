@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="34" viewBox="0 0 320 34">
+  <!-- 標題下方的金色卷草飾線，中間一枚扇貝 -->
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#e2b85a" stop-opacity="0"/>
+      <stop offset=".18" stop-color="#e2b85a"/>
+      <stop offset=".5" stop-color="#f6dc8c"/>
+      <stop offset=".82" stop-color="#e2b85a"/>
+      <stop offset="1" stop-color="#e2b85a" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="s" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff1bd"/>
+      <stop offset="1" stop-color="#c9973a"/>
+    </linearGradient>
+  </defs>
+  <g fill="none" stroke="url(#g)" stroke-width="1.6" stroke-linecap="round">
+    <path d="M142,18 C120,6 96,28 70,17 C52,9 34,12 6,19"/>
+    <path d="M178,18 C200,6 224,28 250,17 C268,9 286,12 314,19"/>
+    <path d="M118,12 C112,4 100,6 102,13 C103,17 108,17 108,14"/>
+    <path d="M202,12 C208,4 220,6 218,13 C217,17 212,17 212,14"/>
+  </g>
+  <g fill="#f6dc8c">
+    <circle cx="86" cy="22.5" r="1.6"/>
+    <circle cx="234" cy="22.5" r="1.6"/>
+  </g>
+  <path d="M160,29 C155.5,27 150,22.5 150,17.5 C150,13 154.5,10.5 160,10.5 C165.5,10.5 170,13 170,17.5 C170,22.5 164.5,27 160,29 Z" fill="url(#s)" stroke="#5e3e0b" stroke-width=".8"/>
+  <g stroke="#7a5414" stroke-width=".7" fill="none"><path d="M160,28 L152,15.5"/><path d="M160,28 L155.6,12"/><path d="M160,28 V11"/><path d="M160,28 L164.4,12"/><path d="M160,28 L168,15.5"/></g>
+</svg>

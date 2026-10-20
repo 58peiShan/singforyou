@@ -1,6 +1,8 @@
 /* 離線快取（只在 http/https 網站上啟用）：有網路時抓最新版，沒網路時用上次的快取。 */
-var CACHE = 'chaoyue-v1';
+var CACHE = 'chaoyue-v2';
 var CORE = ['./', 'index.html', 'css/base.css', 'css/stage.css', 'css/screens.css', 'data/script.js',
+  'css/ui/paper.svg', 'css/ui/frame-page.svg', 'css/ui/plaque.svg', 'css/ui/plaque-hover.svg', 'css/ui/plaque-gold.svg',
+  'css/ui/ribbon.svg', 'css/ui/star.svg', 'css/ui/shell.svg', 'css/ui/lock.svg', 'css/ui/diamond.svg', 'css/ui/flourish.svg',
   'js/util.js', 'js/persist.js', 'js/art.js', 'js/audio.js', 'js/stage.js', 'js/engine.js', 'js/ui.js', 'js/main.js',
   'icon.svg', 'icon-180.png', 'icon-192.png', 'icon-512.png', 'manifest.webmanifest'];
 

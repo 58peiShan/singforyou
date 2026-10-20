@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="56" viewBox="0 0 120 56">
+  <!-- 凹角金框牌匾（九宮格切片 上下 20、左右 22） -->
+  <defs>
+    <linearGradient id="rim" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff1bd"/>
+      <stop offset=".24" stop-color="#e7c063"/>
+      <stop offset=".5" stop-color="#b48325"/>
+      <stop offset=".74" stop-color="#f2d27c"/>
+      <stop offset="1" stop-color="#8a5f14"/>
+    </linearGradient>
+    <linearGradient id="fill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fffaf0"/>
+      <stop offset=".55" stop-color="#f4e7c8"/>
+      <stop offset="1" stop-color="#e9d6a8"/>
+    </linearGradient>
+  </defs>
+  <path d="M9,0 H111 A9,9 0 0 0 120,9 V47 A9,9 0 0 0 111,56 H9 A9,9 0 0 0 0,47 V9 A9,9 0 0 0 9,0 Z" fill="#5e3e0b"/>
+  <path d="M10,1 H110 A9,9 0 0 0 119,10 V46 A9,9 0 0 0 110,55 H10 A9,9 0 0 0 1,46 V10 A9,9 0 0 0 10,1 Z" fill="url(#rim)"/>
+  <path d="M12,4 H108 A12,12 0 0 0 116,12 V44 A12,12 0 0 0 108,52 H12 A12,12 0 0 0 4,44 V12 A12,12 0 0 0 12,4 Z" fill="url(#fill)" stroke="#7a5414" stroke-width=".8"/>
+  <path d="M15.5,7.5 H104.5 A15.5,15.5 0 0 0 112.5,15.5 V40.5 A15.5,15.5 0 0 0 104.5,48.5 H15.5 A15.5,15.5 0 0 0 7.5,40.5 V15.5 A15.5,15.5 0 0 0 15.5,7.5 Z" fill="none" stroke="#b0822a" stroke-width="1"/>
+</svg>

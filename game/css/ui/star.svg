@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20">
+  <!-- 四角星（金） -->
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff3c4"/>
+      <stop offset=".5" stop-color="#e2b85a"/>
+      <stop offset="1" stop-color="#9a6a1c"/>
+    </linearGradient>
+  </defs>
+  <path d="M10,.6 Q11.2,8.8 19.4,10 Q11.2,11.2 10,19.4 Q8.8,11.2 .6,10 Q8.8,8.8 10,.6 Z" fill="url(#g)" stroke="#5e3e0b" stroke-width=".7" stroke-linejoin="round"/>
+</svg>
