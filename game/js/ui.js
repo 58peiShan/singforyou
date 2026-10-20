@@ -497,7 +497,7 @@
       h = openOverlay(box);
       setTimeout(function () { var b = box.querySelector('button'); if (b) b.focus({ preventScroll: true }); }, 30);
     },
-    // 手機版：齒輪按鈕收合的快捷選單
+    // 手機版：漢堡選單按鈕收合的快捷選單
     closeQm: function () {
       document.getElementById('ui-layer').classList.remove('qm-open');
       document.getElementById('qm-toggle').setAttribute('aria-expanded', 'false');

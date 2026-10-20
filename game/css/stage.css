@@ -361,7 +361,8 @@
 /* 自動／快進開啟中：金底＋底線＋粗體（不只靠顏色區分） */
 #quickmenu button.active { background: var(--fill-gold) padding-box, var(--rim) border-box; color: var(--ink); font-weight: 800; box-shadow: 0 0 0 1px var(--gold-edge), inset 0 -3px 0 var(--gold-5); }
 #ui-layer.no-text #quickmenu { opacity: .0; pointer-events: none; }
-#qm-toggle { display: none; }  /* 齒輪按鈕只在手機版出現，見檔案最後 */
+#quickmenu .qm-icon svg { display: none; }  /* 設定、標題的圖示只在手機版出現，電腦版顯示文字 */
+#qm-toggle { display: none; }  /* 漢堡選單按鈕只在手機版出現，見檔案最後 */
 
 /* 模式提示 */
 #mode-badge {
@@ -531,7 +532,7 @@
   .bg-name { display: none; }
 }
 
-/* ---------- 手機（直式＋矮橫式）：快捷選單收進右上角齒輪 ---------- */
+/* ---------- 手機（直式＋矮橫式）：快捷選單收進右上角漢堡選單 ---------- */
 @media (orientation: portrait), (orientation: landscape) and (max-height: 520px) {
   #qm-toggle {
     --focus: #ffe08a;
@@ -568,7 +569,6 @@
   }
   #qm-toggle:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
   #ui-layer.qm-open #qm-toggle { color: var(--gold-hi); box-shadow: var(--bevel), var(--glow); }
-  #ui-layer.qm-open #qm-toggle svg { transform: rotate(60deg); }
   #ui-layer.no-text #qm-toggle { opacity: 0; pointer-events: none; }
 
   #quickmenu {
@@ -578,7 +578,7 @@
     left: auto;
     z-index: 3;
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
     gap: 6px;
     min-width: 156px;
     max-height: calc(100% - 70px - var(--safe-t));
@@ -605,6 +605,7 @@
   }
   #ui-layer.no-text #quickmenu { opacity: 0; visibility: hidden; pointer-events: none; }
   #quickmenu button {
+    grid-column: 1 / -1;  /* 文字鈕一個佔一整列 */
     min-width: 0;
     min-height: 42px;
     padding: 0 16px;
@@ -613,7 +614,29 @@
     text-indent: .2em;
     color: var(--ink);
   }
+  /* 齒輪（設定）、房子（標題）：並排在最後一列，文字只留給讀屏軟體 */
+  #quickmenu button.qm-icon { grid-column: auto; position: relative; padding: 0; text-indent: 0; }
+  #quickmenu .qm-icon svg {
+    display: block;
+    width: 22px;
+    height: 22px;
+    margin: auto;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  #quickmenu .qm-icon span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
 }
 @media (orientation: landscape) and (max-height: 520px) {
-  #quickmenu { grid-template-columns: 1fr 1fr; min-width: 250px; }
+  #quickmenu { min-width: 250px; }
+  #quickmenu button { grid-column: auto; }
 }
