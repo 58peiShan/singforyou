@@ -109,6 +109,12 @@
         Au.ui('click');
         UI.titleAction(b.dataset.t);
       });
+      var bookmark = document.getElementById('bookmark-gallery');
+      hoverSound(bookmark, '.bookmark');
+      bookmark.addEventListener('click', function () {
+        Au.ui('click');
+        UI.titleAction('gallery');
+      });
       var built = E.data && E.data.builtAt ? VN.fmtTime(E.data.builtAt) : '';
       document.getElementById('title-foot').textContent = built ? '劇本更新於 ' + built : '';
     },
@@ -161,21 +167,12 @@
       var latest = P.latest();
       var btns = dom.title.querySelectorAll('#title-menu button');
       btns.forEach(function (b) {
-        if (b.dataset.t === 'continue') b.disabled = !latest;
+        // 一筆存檔（含自動存檔）都沒有時，「繼續」「讀取存檔」都沒東西可讀，直接藏起來
+        if (b.dataset.t === 'continue' || b.dataset.t === 'load') b.hidden = !latest;
         if (b.dataset.t === 'side') {
           b.classList.toggle('locked', !P.anyEnding());
           b.setAttribute('aria-label', P.anyEnding() ? b.textContent : b.textContent + '（達成任一結局後解鎖）');
         }
-      });
-      var box = document.getElementById('ending-badges');
-      box.innerHTML = '';
-      ['伴侶', '朋友', 'BAD'].forEach(function (code) {
-        var got = P.g.endings[code];
-        var b = el('span.ending-badge' + (got ? '.got' : '') + (code === 'BAD' ? '.bad' : ''), { title: VN.ENDING_LABEL[code] });
-        b.appendChild(el('span.pearl'));
-        b.appendChild(el('b', { text: code }));
-        b.appendChild(document.createTextNode(got ? '「' + (got.name || VN.ENDING_LABEL[code]) + '」' : '　？？？'));
-        box.appendChild(b);
       });
     },
 
