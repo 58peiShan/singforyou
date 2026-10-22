@@ -5,7 +5,7 @@
   position: absolute;
   inset: 0;
   overflow: hidden;
-  cursor: pointer;
+  cursor: default;
   --tb-h: clamp(150px, 28%, 270px);        /* 對話框高度 */
   --tb-w: min(1180px, calc(100% - 28px - var(--safe-l) - var(--safe-r)));
   --tb-bottom: calc(12px + var(--safe-b));
@@ -215,7 +215,10 @@
   box-shadow: 0 0 0 1px var(--gold-edge), 0 14px 40px rgba(0, 0, 0, .5), inset 0 0 34px rgba(150, 105, 40, .3);
   transition: opacity .35s ease, transform .35s var(--ease);
 }
-#textbox.off { opacity: 0; transform: translateX(-50%) translateY(10px); }
+/* 對話框本身要能接收點擊（點對話框＝下一句，點框外＝隱藏介面） */
+#textbox { pointer-events: auto; cursor: pointer; }
+#stage:has(#ui-layer.hidden-ui) { cursor: pointer; }
+#textbox.off { opacity: 0; transform: translateX(-50%) translateY(10px); pointer-events: none; }
 #textbox.has-face { padding-left: calc(40px + var(--face-size) + 20px); }
 #textbox::after {  /* 頁緣上方中央的金菱飾 */
   content: "";
@@ -325,44 +328,159 @@
   color: var(--cream);
 }
 
-/* 快捷選單：頁面右下角的一排小金框鈕 */
+/* 對話框右下角：自動、快進兩個金框圖示（電腦版；手機版收進漢堡選單） */
+#tb-tools {
+  position: absolute;
+  right: 28px;
+  bottom: 14px;
+  display: flex;
+  gap: 10px;
+  pointer-events: auto;
+}
+.tb-icon {
+  appearance: none;
+  -webkit-appearance: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  background: var(--fill-cream) padding-box, var(--rim) border-box;
+  box-shadow: 0 0 0 1px var(--gold-edge), 0 2px 4px rgba(60, 38, 8, .35);
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: box-shadow .2s, transform .15s;
+}
+.tb-icon svg { width: 18px; height: 18px; fill: currentColor; }
+.tb-icon:hover { background: var(--fill-cream-hover) padding-box, var(--rim-hover) border-box; color: var(--ink); box-shadow: 0 0 0 1px var(--gold-edge), var(--glow); }
+.tb-icon:active { transform: translateY(1px); }
+.tb-icon:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+/* 開啟中：金底＋深色內圈＋光暈（不只靠顏色區分） */
+.tb-icon.active { background: var(--fill-gold) padding-box, var(--rim) border-box; color: var(--ink); box-shadow: 0 0 0 1px var(--gold-edge), inset 0 0 0 2px var(--gold-5), var(--glow); }
+
+/* 右上角漢堡選單按鈕 */
+#qm-toggle {
+  --focus: #ffe08a;
+  appearance: none;
+  -webkit-appearance: none;
+  position: absolute;
+  top: calc(8px + var(--safe-t));
+  right: calc(8px + var(--safe-r));
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  background: var(--fill-navy) padding-box, var(--rim) border-box;
+  box-shadow: var(--bevel), 0 4px 10px rgba(0, 0, 0, .45);
+  color: var(--gold-1);
+  cursor: pointer;
+  pointer-events: auto;
+  transition: opacity .3s, box-shadow .2s;
+}
+#qm-toggle svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+#qm-toggle:hover { box-shadow: var(--bevel), var(--glow), 0 4px 10px rgba(0, 0, 0, .45); }
+#qm-toggle:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+#ui-layer.qm-open #qm-toggle { color: var(--gold-hi); box-shadow: var(--bevel), var(--glow); }
+#ui-layer.no-text #qm-toggle, #ui-layer.no-text #tb-tools { opacity: 0; pointer-events: none; }
+
+/* 展開的選單：羊皮紙卡片 */
 #quickmenu {
   --focus: #1d3f91;
   position: absolute;
-  bottom: calc(var(--tb-bottom) + 16px);
-  right: calc((100% - var(--tb-w)) / 2 + 30px);
-  display: flex;
+  top: calc(8px + var(--safe-t) + 46px + 8px);
+  right: calc(8px + var(--safe-r));
+  z-index: 3;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 6px;
-  pointer-events: auto;
-  transition: opacity .3s;
+  min-width: 156px;
+  max-height: calc(100% - 70px - var(--safe-t));
+  overflow-y: auto;
+  padding: 14px 14px;
+  color: var(--ink);
+  background-color: var(--paper);
+  background-image: url(ui/paper.svg), radial-gradient(130% 110% at 50% 35%, var(--paper-hi), var(--paper) 60%, var(--paper-mid));
+  border-image: url(ui/frame-page.svg) 64 / 30px / 0 stretch;
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px var(--gold-edge), 0 16px 40px rgba(0, 0, 0, .5);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-6px);
+  pointer-events: none;
+  transition: opacity .2s, transform .2s var(--ease), visibility 0s .2s;
 }
+#ui-layer.qm-open #quickmenu {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  pointer-events: auto;
+  transition: opacity .2s, transform .2s var(--ease);
+}
+#ui-layer.no-text #quickmenu { opacity: 0; visibility: hidden; pointer-events: none; }
 #quickmenu button {
   appearance: none;
   -webkit-appearance: none;
-  min-width: 50px;
-  min-height: 30px;
-  padding: 0 10px;
+  grid-column: 1 / -1;  /* 文字鈕一個佔一整列 */
+  min-width: 0;
+  min-height: 42px;
+  padding: 0 16px;
   border-radius: 999px;
   border: 2px solid transparent;
   background: var(--fill-cream) padding-box, var(--rim) border-box;
   box-shadow: 0 0 0 1px var(--gold-edge), 0 2px 3px rgba(60, 38, 8, .3);
-  color: var(--ink-2);
+  color: var(--ink);
   font-family: var(--font-serif);
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
-  letter-spacing: .12em;
-  text-indent: .12em;
+  letter-spacing: .2em;
+  text-indent: .2em;
   cursor: pointer;
   transition: box-shadow .2s, transform .15s;
 }
-#quickmenu button:hover { background: var(--fill-cream-hover) padding-box, var(--rim-hover) border-box; color: var(--ink); box-shadow: 0 0 0 1px var(--gold-edge), var(--glow); }
+#quickmenu button:hover { background: var(--fill-cream-hover) padding-box, var(--rim-hover) border-box; box-shadow: 0 0 0 1px var(--gold-edge), var(--glow); }
 #quickmenu button:active { transform: translateY(1px); }
 #quickmenu button:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 /* 自動／快進開啟中：金底＋底線＋粗體（不只靠顏色區分） */
-#quickmenu button.active { background: var(--fill-gold) padding-box, var(--rim) border-box; color: var(--ink); font-weight: 800; box-shadow: 0 0 0 1px var(--gold-edge), inset 0 -3px 0 var(--gold-5); }
-#ui-layer.no-text #quickmenu { opacity: .0; pointer-events: none; }
-#quickmenu .qm-icon svg { display: none; }  /* 設定、標題的圖示只在手機版出現，電腦版顯示文字 */
-#qm-toggle { display: none; }  /* 漢堡選單按鈕只在手機版出現，見檔案最後 */
+#quickmenu button.active { background: var(--fill-gold) padding-box, var(--rim) border-box; font-weight: 800; box-shadow: 0 0 0 1px var(--gold-edge), inset 0 -3px 0 var(--gold-5); }
+/* 齒輪（設定）、房子（標題）：並排在最後一列，文字只留給讀屏軟體 */
+#quickmenu button.qm-icon { grid-column: auto; position: relative; padding: 0; text-indent: 0; }
+#quickmenu .qm-icon svg {
+  display: block;
+  width: 22px;
+  height: 22px;
+  margin: auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+#quickmenu .qm-icon span {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+/* 電腦版的自動、快進在對話框右下角，選單裡不重複 */
+#quickmenu [data-q=auto], #quickmenu [data-q=skip] { display: none; }
 
 /* 模式提示 */
 #mode-badge {
@@ -532,111 +650,14 @@
   .bg-name { display: none; }
 }
 
-/* ---------- 手機（直式＋矮橫式）：快捷選單收進右上角漢堡選單 ---------- */
+/* ---------- 手機（直式＋矮橫式）：自動、快進收進漢堡選單 ---------- */
 @media (orientation: portrait), (orientation: landscape) and (max-height: 520px) {
-  #qm-toggle {
-    --focus: #ffe08a;
-    appearance: none;
-    -webkit-appearance: none;
-    position: absolute;
-    top: calc(8px + var(--safe-t));
-    right: calc(8px + var(--safe-r));
-    z-index: 3;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 46px;
-    height: 46px;
-    padding: 0;
-    border-radius: 50%;
-    border: 3px solid transparent;
-    background: var(--fill-navy) padding-box, var(--rim) border-box;
-    box-shadow: var(--bevel), 0 4px 10px rgba(0, 0, 0, .45);
-    color: var(--gold-1);
-    cursor: pointer;
-    pointer-events: auto;
-    transition: opacity .3s, box-shadow .2s;
-  }
-  #qm-toggle svg {
-    width: 22px;
-    height: 22px;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 1.8;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    transition: transform .35s var(--ease);
-  }
-  #qm-toggle:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
-  #ui-layer.qm-open #qm-toggle { color: var(--gold-hi); box-shadow: var(--bevel), var(--glow); }
-  #ui-layer.no-text #qm-toggle { opacity: 0; pointer-events: none; }
-
-  #quickmenu {
-    top: calc(8px + var(--safe-t) + 46px + 8px);
-    right: calc(8px + var(--safe-r));
-    bottom: auto;
-    left: auto;
-    z-index: 3;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 6px;
-    min-width: 156px;
-    max-height: calc(100% - 70px - var(--safe-t));
-    overflow-y: auto;
-    padding: 14px 14px;
-    color: var(--ink);
-    background-color: var(--paper);
-    background-image: url(ui/paper.svg), radial-gradient(130% 110% at 50% 35%, var(--paper-hi), var(--paper) 60%, var(--paper-mid));
-    border-image: url(ui/frame-page.svg) 64 / 30px / 0 stretch;
-    border-radius: 2px;
-    box-shadow: 0 0 0 1px var(--gold-edge), 0 16px 40px rgba(0, 0, 0, .5);
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(-6px);
-    pointer-events: none;
-    transition: opacity .2s, transform .2s var(--ease), visibility 0s .2s;
-  }
-  #ui-layer.qm-open #quickmenu {
-    opacity: 1;
-    visibility: visible;
-    transform: none;
-    pointer-events: auto;
-    transition: opacity .2s, transform .2s var(--ease);
-  }
-  #ui-layer.no-text #quickmenu { opacity: 0; visibility: hidden; pointer-events: none; }
-  #quickmenu button {
-    grid-column: 1 / -1;  /* 文字鈕一個佔一整列 */
-    min-width: 0;
-    min-height: 42px;
-    padding: 0 16px;
-    font-size: 15px;
-    letter-spacing: .2em;
-    text-indent: .2em;
-    color: var(--ink);
-  }
-  /* 齒輪（設定）、房子（標題）：並排在最後一列，文字只留給讀屏軟體 */
-  #quickmenu button.qm-icon { grid-column: auto; position: relative; padding: 0; text-indent: 0; }
-  #quickmenu .qm-icon svg {
-    display: block;
-    width: 22px;
-    height: 22px;
-    margin: auto;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 1.8;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-  }
-  #quickmenu .qm-icon span {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
-    white-space: nowrap;
-  }
+  #tb-tools { display: none; }
+  #quickmenu [data-q=auto], #quickmenu [data-q=skip] { display: block; }
 }
 @media (orientation: landscape) and (max-height: 520px) {
+  /* 兩欄：存檔｜讀檔、紀錄（整列）、自動｜快進、設定｜標題 */
   #quickmenu { min-width: 250px; }
   #quickmenu button { grid-column: auto; }
+  #quickmenu [data-q=log] { grid-column: 1 / -1; }
 }

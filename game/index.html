@@ -50,8 +50,13 @@
         <div id="nameplate"></div>
         <div id="text" aria-live="polite"></div>
         <div id="next-mark" aria-hidden="true"></div>
+        <!-- 電腦版：對話框右下角只留自動、快進兩個圖示（手機版收在漢堡選單裡） -->
+        <div id="tb-tools">
+          <button type="button" class="tb-icon" data-q="auto" aria-label="自動播放" aria-pressed="false" title="自動播放（A）"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.2v13.6L19 12z"/></svg></button>
+          <button type="button" class="tb-icon" data-q="skip" aria-label="快進" aria-pressed="false" title="快進（按住 Ctrl 也可以）"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 6v12l8.5-6zM12 6v12l8.5-6z"/></svg></button>
+        </div>
       </div>
-      <!-- 手機版：快捷選單收進右上角的漢堡選單按鈕 -->
+      <!-- 右上角的漢堡選單：存檔、讀檔、紀錄、設定、標題（手機版另外包含自動、快進） -->
       <button type="button" id="qm-toggle" aria-label="選單" aria-controls="quickmenu" aria-expanded="false">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
       </button>
@@ -61,7 +66,6 @@
           <button type="button" data-q="log">紀錄</button>
           <button type="button" data-q="auto">自動</button>
           <button type="button" data-q="skip">快進</button>
-          <button type="button" data-q="hide">隱藏</button>
           <!-- 設定、標題：電腦版顯示文字，手機版展開後顯示齒輪、房子圖示 -->
           <button type="button" data-q="config" class="qm-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>設定</span></button>
           <button type="button" data-q="title" class="qm-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1.5 1.5 0 0 1-1.5 1.5H15v-6.5H9v6.5H4.5A1.5 1.5 0 0 1 3 20z"/></svg><span>標題</span></button>

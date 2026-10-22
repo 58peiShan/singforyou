@@ -583,8 +583,15 @@
     },
     updateModes: function () {
       if (!dom.qm) return;
-      dom.qm.querySelector('[data-q=auto]').classList.toggle('active', E.mode.auto);
-      dom.qm.querySelector('[data-q=skip]').classList.toggle('active', E.mode.skip || E.mode.ctrl);
+      // 選單裡的文字鈕和對話框右下角的圖示一起更新
+      var mark = function (q, on) {
+        dom.ui.querySelectorAll('[data-q=' + q + ']').forEach(function (b) {
+          b.classList.toggle('active', on);
+          b.setAttribute('aria-pressed', String(on));
+        });
+      };
+      mark('auto', E.mode.auto);
+      mark('skip', E.mode.skip || E.mode.ctrl);
       var txt = E.skipping() ? '快進中' : E.mode.auto ? '自動播放' : '';
       dom.badge.textContent = txt;
       dom.badge.classList.toggle('on', !!txt);
