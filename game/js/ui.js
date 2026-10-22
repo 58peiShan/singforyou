@@ -494,10 +494,24 @@
       h = openOverlay(box);
       setTimeout(function () { var b = box.querySelector('button'); if (b) b.focus({ preventScroll: true }); }, 30);
     },
-    // 手機版：漢堡選單按鈕收合的快捷選單
-    closeQm: function () {
-      document.getElementById('ui-layer').classList.remove('qm-open');
-      document.getElementById('qm-toggle').setAttribute('aria-expanded', 'false');
+    // 右上角漢堡選單：open 省略時切換；byKey＝用鍵盤（M）開的，焦點移到第一個項目
+    toggleQm: function (open, byKey) {
+      var ui = document.getElementById('ui-layer');
+      var toggle = document.getElementById('qm-toggle');
+      if (open == null) open = !ui.classList.contains('qm-open');
+      if (open && ui.classList.contains('no-text')) return;   // 章節卡、轉場時選單本來就藏著
+      if (open) ui.classList.remove('hidden-ui');
+      var inMenu = document.getElementById('quickmenu').contains(document.activeElement);
+      ui.classList.toggle('qm-open', open);
+      toggle.setAttribute('aria-expanded', String(open));
+      if (open && byKey) { var first = UI.qmItems()[0]; if (first) first.focus({ preventScroll: true }); }
+      // 收起時把焦點放掉，之後按空白鍵／Enter 才會是「下一句」
+      if (!open && inMenu) document.activeElement.blur();
+    },
+    closeQm: function () { UI.toggleQm(false); },
+    /** 選單裡目前看得到的按鈕（電腦版不含自動、快進） */
+    qmItems: function () {
+      return VN.$$('#quickmenu button').filter(function (b) { return b.offsetParent !== null; });
     },
     askTitle: function () {
       UI.confirm('要回到標題畫面嗎？\n沒有存檔的進度會遺失。', '回到標題', '取消').then(function (ok) {
@@ -512,16 +526,22 @@
       var unlock = function () { Au.unlock(); };
       ['pointerdown', 'keydown', 'touchend'].forEach(function (t) { window.addEventListener(t, unlock, { capture: true, passive: true }); });
 
-      // 玩家點對話框（或按鍵、滾輪）前進：有字可以翻時才出翻頁聲
+      // 玩家點對話框（或按鍵）前進：有字可以翻時才出翻頁聲
       var advance = function () {
         if (E.waiting === 'text') Au.ui('page');
         E.advance();
       };
+      var textbox = document.getElementById('textbox');
       stage.addEventListener('click', function (e) {
         if (!E.active || stack.length) return;
-        if (e.target.closest('#quickmenu, #choices, #qm-toggle')) return;
+        if (e.target.closest('#quickmenu, #choices, #qm-toggle, #tb-tools')) return;
         if (ui.classList.contains('qm-open')) { UI.closeQm(); return; }
         if (ui.classList.contains('hidden-ui')) { ui.classList.remove('hidden-ui'); return; }
+        // 點對話框才是下一句；點對話框以外的地方把介面藏起來，再點一下就回來
+        if (!e.target.closest('#textbox')) {
+          if (!textbox.classList.contains('off') && !ui.classList.contains('no-text')) ui.classList.add('hidden-ui');
+          return;
+        }
         advance();
       });
       stage.addEventListener('contextmenu', function (e) {
@@ -529,37 +549,39 @@
         if (!E.active || stack.length) return;
         ui.classList.toggle('hidden-ui');
       });
+      // 滾輪往上看對話紀錄（往下不再前進劇情）
       stage.addEventListener('wheel', function (e) {
         if (!E.active || stack.length) return;
         if (e.deltaY < -20) UI.openBacklog();
-        else if (e.deltaY > 20 && !ui.classList.contains('hidden-ui')) advance();
       }, { passive: true });
 
       var qmToggle = document.getElementById('qm-toggle');
       qmToggle.addEventListener('click', function (e) {
         e.stopPropagation();
         if (!E.active) return;
-        var open = !ui.classList.contains('qm-open');
-        ui.classList.toggle('qm-open', open);
-        qmToggle.setAttribute('aria-expanded', String(open));
+        UI.toggleQm(null, e.detail === 0);   // detail 0＝用鍵盤按的
+        if (e.detail > 0) qmToggle.blur();
       });
 
-      document.getElementById('quickmenu').addEventListener('click', function (e) {
+      var quick = function (e) {
         e.stopPropagation();
         var b = e.target.closest('button');
         if (!b || !E.active) return;
         UI.closeQm();
+        // 用滑鼠按的就把焦點放掉，之後按空白鍵／Enter 才會是「下一句」而不是再按一次這顆鈕
+        if (e.detail > 0 && b.closest('#tb-tools')) b.blur();
         switch (b.dataset.q) {
           case 'save': UI.openSaveLoad('save'); break;
           case 'load': UI.openSaveLoad('load'); break;
           case 'log': UI.openBacklog(); break;
           case 'auto': E.setAuto(!E.mode.auto); break;
           case 'skip': E.setSkip(!E.mode.skip); break;
-          case 'hide': ui.classList.add('hidden-ui'); break;
           case 'config': UI.openSettings(); break;
           case 'title': UI.askTitle(); break;
         }
-      });
+      };
+      document.getElementById('quickmenu').addEventListener('click', quick);
+      document.getElementById('tb-tools').addEventListener('click', quick);
 
       window.addEventListener('keydown', function (e) {
         var k = e.key;
@@ -571,9 +593,20 @@
         }
         if (!E.active) return;
         var tag = e.target && e.target.tagName;
-        if ((k === 'Enter' || k === ' ') && (tag === 'BUTTON' || tag === 'INPUT') && !e.target.closest('#quickmenu')) return;
+        var qmOpen = ui.classList.contains('qm-open');
+        // 選單開著時，Enter／空白鍵是按下選單裡的按鈕；選單關著時，留在快捷鈕上的焦點不影響「下一句」
+        if ((k === 'Enter' || k === ' ') && (tag === 'BUTTON' || tag === 'INPUT') && (qmOpen || !e.target.closest('#quickmenu'))) return;
+        if (qmOpen && (k === 'ArrowDown' || k === 'ArrowUp')) {
+          e.preventDefault();
+          var items = UI.qmItems();
+          var i = items.indexOf(document.activeElement);
+          var next = items[(i + (k === 'ArrowDown' ? 1 : -1) + items.length) % items.length];
+          if (next) next.focus({ preventScroll: true });
+          return;
+        }
         if (k === 'Enter' || k === ' ' || k === 'Spacebar') {
           e.preventDefault();
+          if (qmOpen) { UI.closeQm(); return; }   // 和點畫面一樣：選單開著時先收起來
           if (e.repeat && E.waiting !== 'text') return;
           if (ui.classList.contains('hidden-ui')) { ui.classList.remove('hidden-ui'); return; }
           if (e.repeat) E.advance(); else advance();   // 按住不放快速前進時不連續出聲
@@ -591,6 +624,8 @@
           E.setAuto(!E.mode.auto);
         } else if (k === 'h' || k === 'H') {
           ui.classList.toggle('hidden-ui');
+        } else if ((k === 'm' || k === 'M') && !e.ctrlKey && !e.metaKey && !e.altKey) {
+          UI.toggleQm(null, true);
         }
       });
       window.addEventListener('keyup', function (e) { if (e.key === 'Control') E.setCtrl(false); });
