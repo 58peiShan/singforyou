@@ -80,6 +80,8 @@ node tools/build.js --out <檔案>          # 輸出到別的檔案
 現在沒有圖或音樂的地方，遊戲會自動用「佔位」：依背景名稱產生的漸層場景、角色剪影、CG 卡片、電腦合成的音樂與音效。
 把真正的素材放進 `game/assets/` 對應的資料夾，**再執行一次 `build.bat`** 就會換上。每個資料夾裡都有 `README.txt` 說明命名方式。
 
+立繪例外：AI 畫好的灰底原圖放進 `img/立繪/`（檔名像 `阿英_笑.png`），**雙擊 `cut_sprites.bat`** 會自動去背、放進 `game/assets/sprites/`，並重新建置。
+
 | 類型 | 放在 | 檔名 |
 |---|---|---|
 | 背景 | `game/assets/bg/` | `<背景名稱>.jpg`（或 .png / .webp），例：`白鹽灣沙灘・黃昏.jpg` |
@@ -130,9 +132,12 @@ node tools/build.js --out <檔案>          # 輸出到別的檔案
 
 ```
 build.bat                 雙擊重新建置劇本
+cut_sprites.bat           雙擊把 img/立繪/ 的新立繪去背、放進遊戲並重新建置
 README.md                 這份說明
 script/                   劇本（.md）
+img/立繪/                 AI 畫好的立繪原圖（灰底）放這裡
 tools/build.js            劇本 → game/data/script.js 的建置工具（零相依）
+tools/cut_sprites.py      立繪去背工具（需要 Python；cut_sprites.bat 會自動安裝套件）
 tools/make-icons.js       產生主畫面圖示 PNG（一般不需要再跑）
 tools/test-fixtures/      測試用的小劇本（涵蓋所有指令、三種結局、人魚篇）
 game/                     ← 整個上傳到網站就能玩

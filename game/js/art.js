@@ -570,6 +570,7 @@
     },
     '珊婆': {
       hairA: '#f7b3c8', hairB: '#d9668c', skinA: '#e8664a', skinB: '#b8412c', clothA: '#5a6b80', clothB: '#2c3646', wide: true,
+      realScale: { '': 0.32 },   // 真實立繪：寄居蟹（預設形態）縮成小隻；人魚形態維持全身高度
       draw: function (u) {
         return '<path d="M40,600 C50,470 130,420 210,418 C300,416 360,470 370,600 Z" fill="url(#c' + u + ')"' + RIM + '/>' +
           '<path d="M90,480 C140,450 220,446 300,470" stroke="rgba(255,255,255,.12)" stroke-width="4" fill="none"/>' +
@@ -654,6 +655,12 @@
     return '<svg viewBox="0 0 400 600" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMax meet" aria-hidden="true">' + defs(u, p) + body + ex + '</svg>';
   };
   A.spriteScale = function (char) { var p = CHARS[char]; return (p && p.scale) || 1; };
+  /** 真實立繪的縮放，依形態（'' = 預設形態）；沒設定就是 1 */
+  A.realScale = function (char, form) {
+    var r = CHARS[char] && CHARS[char].realScale;
+    var v = r && r[form || ''];
+    return v == null ? 1 : v;
+  };
   A.isWide = function (char) { var p = CHARS[char]; return !!(p && p.wide); };
 
   /** 立繪的一層（圖片或剪影） */

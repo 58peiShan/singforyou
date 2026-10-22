@@ -188,15 +188,18 @@
           var img = s.pose.querySelector('img.layer:not(.old)');
           aspect = img && img.naturalWidth ? img.naturalWidth / img.naturalHeight : 1 / 1.4;
         } else aspect = A.isWide(s.c) ? 3 / 3.4 : 2 / 3;
-        // 真實立繪是全身圖（約 1:1.4），橫式約 90% 舞台高、直式略小；佔位剪影是半身
-        var base = (s.real ? (portrait ? 0.7 : 0.9) : (portrait ? 0.62 : 0.8) * A.spriteScale(s.c)) * H;
+        // 真實立繪是全身圖（約 1:1.4），橫式約 90% 舞台高、直式略小；佔位剪影是半身。
+        // 小型角色（寄居蟹）的真實立繪另外縮小，而且整隻露在對話框上面
+        var scale = s.real ? A.realScale(s.c, s.f) : A.spriteScale(s.c);
+        var small = s.real && scale < 1;
+        var base = (s.real ? (portrait ? 0.7 : 0.9) : (portrait ? 0.62 : 0.8)) * scale * H;
         var slotW = W / Math.max(n, 1);
         var maxH = n > 1 ? (slotW / aspect) * 1.3 : W / aspect;
         var h = Math.min(base, maxH);
         // 對話框上緣以上至少要露出的比例：全身圖露出上半身，半身剪影要露出肩膀
-        var visible = s.real ? 0.5 : 0.8;
+        var visible = small ? 1 : s.real ? 0.5 : 0.8;
         var bottom = Math.max(0, H - tbTop - (1 - visible) * h);
-        if (s.real && !portrait) bottom = Math.min(bottom, H * 0.04);
+        if (s.real && !small && !portrait) bottom = Math.min(bottom, H * 0.04);
         var st = s.node.style;
         if (instant && (!only || only.indexOf(s) >= 0)) s.node.classList.add('instant');
         st.left = pos[i] + '%';
