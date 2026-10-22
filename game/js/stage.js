@@ -19,6 +19,11 @@
   var cardTimer = null;
 
   /** 立繪橫向位置（%） */
+  // 真實立繪（全身圖）在舞台上的框法：頭頂離舞台頂端 3%，腰（圖高的 36% 處）對齊對話框上緣，腿在畫面外。
+  // 想露出更多身體就把 REAL_WAIST 調大（例如 0.5 = 切到大腿）。
+  var REAL_TOP = 0.03;
+  var REAL_WAIST = 0.36;
+
   VN.layoutPositions = function (n, portrait) {
     if (n <= 0) return [];
     if (n === 1) return [50];
@@ -188,18 +193,24 @@
           var img = s.pose.querySelector('img.layer:not(.old)');
           aspect = img && img.naturalWidth ? img.naturalWidth / img.naturalHeight : 1 / 1.4;
         } else aspect = A.isWide(s.c) ? 3 / 3.4 : 2 / 3;
-        // 真實立繪是全身圖（約 1:1.4），橫式約 90% 舞台高、直式略小；佔位剪影是半身。
-        // 小型角色（寄居蟹）的真實立繪另外縮小，而且整隻露在對話框上面
         var scale = s.real ? A.realScale(s.c, s.f) : A.spriteScale(s.c);
-        var small = s.real && scale < 1;
-        var base = (s.real ? (portrait ? 0.7 : 0.9) : (portrait ? 0.62 : 0.8)) * scale * H;
+        var small = s.real && scale < 1;   // 小型角色（寄居蟹）：縮小、整隻露在對話框上面
         var slotW = W / Math.max(n, 1);
-        var maxH = n > 1 ? (slotW / aspect) * 1.3 : W / aspect;
-        var h = Math.min(base, maxH);
-        // 對話框上緣以上至少要露出的比例：全身圖露出上半身，半身剪影要露出肩膀
-        var visible = small ? 1 : s.real ? 0.5 : 0.8;
-        var bottom = Math.max(0, H - tbTop - (1 - visible) * h);
-        if (s.real && !small && !portrait) bottom = Math.min(bottom, H * 0.04);
+        var maxH = n > 1 ? (slotW / aspect) * 1.3 : W / aspect;   // 太窄的畫面就用寬度限制高度
+        var h, bottom;
+        if (s.real && !small) {
+          // 全身立繪放大成半身像：頭頂留邊、腰對齊對話框上緣（見 REAL_TOP / REAL_WAIST）
+          var top = H * REAL_TOP;
+          h = Math.min((tbTop - top) / REAL_WAIST, maxH, H * 2.2);
+          bottom = H - top - h;   // 通常是負的：腿在舞台下方，被 #stage 的 overflow 裁掉
+        } else {
+          // 小型角色約 90% 舞台高再乘縮放；佔位剪影是半身，橫式 80%、直式略小
+          var base = (s.real ? (portrait ? 0.7 : 0.9) : (portrait ? 0.62 : 0.8)) * scale * H;
+          h = Math.min(base, maxH);
+          // 對話框上緣以上要露出的比例：小型角色整隻露出，半身剪影要露出肩膀
+          var visible = small ? 1 : 0.8;
+          bottom = Math.max(0, H - tbTop - (1 - visible) * h);
+        }
         var st = s.node.style;
         if (instant && (!only || only.indexOf(s) >= 0)) s.node.classList.add('instant');
         st.left = pos[i] + '%';

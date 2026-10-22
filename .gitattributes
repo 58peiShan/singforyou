@@ -1,0 +1,4 @@
+# Windows 批次檔一定要用 CRLF 換行：
+# 檔案裡有中文又用 chcp 65001 時，LF 換行會讓 cmd 從錯的位置讀下一行，跑出一堆「不是內部或外部命令」。
+*.bat text eol=crlf
+*.cmd text eol=crlf
