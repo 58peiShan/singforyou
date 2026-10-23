@@ -377,14 +377,14 @@
         var grid = el('div.gallery');
         cgs.forEach(function (c, i) {
           var unlocked = P.hasCG(c.id);
-          var item = el('button.gal-item' + (unlocked ? '' : '.locked'), { type: 'button', 'aria-label': unlocked ? 'CG ' + c.id + ' ' + c.title : 'CG ' + c.id + '（未解鎖）' });
+          var item = el('button.gal-item' + (unlocked ? '' : '.locked'), { type: 'button', 'aria-label': unlocked ? (c.title || 'CG') : '未解鎖的 CG' });
           if (unlocked) {
             var url = A.cg(c.id);
             if (url) item.appendChild(VN.imgOr(url, '', function () { return A.cgCard(c.id, c.title, { mini: true }); }));
             else item.appendChild(A.cgCard(c.id, c.title, { mini: true }));
             item.addEventListener('click', function () { UI.openViewer(cgs, i); });
           } else {
-            item.appendChild(el('div.lock', null, [el('span.no', { text: c.id }), el('span', { text: '未解鎖' })]));
+            item.appendChild(el('div.lock', null, [el('span', { text: '未解鎖' })]));
             item.disabled = false;
             item.addEventListener('click', function () { VN.toast('這張 CG 還沒解鎖'); });
           }
@@ -404,7 +404,7 @@
         box.innerHTML = '';
         var c = unlocked[pos];
         box.appendChild(A.cgView(c.id, c.title, { fit: true }));
-        box.appendChild(el('div.cap', { text: 'CG ' + c.id + '　' + (c.title || '') + '　（' + (pos + 1) + ' / ' + unlocked.length + '）' }));
+        box.appendChild(el('div.cap', { text: c.title || 'CG' }));
         var close = el('button.btn.icon.close', { type: 'button', 'aria-label': '關閉', text: '×' });
         close.addEventListener('click', function (e) { e.stopPropagation(); h.close(); });
         box.appendChild(close);

@@ -1,6 +1,10 @@
 # 人物立繪 Prompt（90 年代賽璐璐動畫風）
 
-這份是給繪圖 AI 用的 prompt，畫法要跟現有的裴柱現立繪（`img/i_wholebody_human.png`）一致。
+共用規則見 [繪圖準則](繪圖.md)：**確認主要角色都能明顯看出是成年女性**。以成熟肩頸、軀幹、四肢與頭身比例表現設定年齡；承完的少年氣不代表少女或男性身形。
+
+劇情事件插圖另見 [CG 繪圖 Prompt](CG繪圖Prompt.md)：包含劇本所需的全部 13 張 CG、1980 年代日本手繪賽璐璐風格規格、角色一致性規則及攝影構圖參考。
+
+這份是給繪圖 AI 用的 prompt，外觀與個性以 `script/角色設定.md` 為準，畫風跟現有的裴柱現立繪（`img/i_wholebody_human.png`）一致。參考圖若與設定衝突，以文字設定為準。以下未在設定中指定的鞋款、服裝配色與道具樣式，是本組立繪的美術補充。
 
 - 中文說明是給作者看的，用來確認內容對不對。
 - 灰底方塊裡的英文才是要貼給 AI 的 prompt。
@@ -14,8 +18,8 @@
 | 孫承完 | 6 | 孫承完_普通、_笑、_害羞、_驚訝、_難過、_認真 |
 | 阿英 | 4 | 阿英_普通、_笑、_擔心、_認真 |
 | 康 | 3 | 康_普通、_大笑、_慌張 |
-| 澪（人類） | 3 | 澪_普通、_冷笑、_怒 |
-| 澪（人魚） | 3 | 澪_人魚_普通、_人魚_冷笑、_人魚_怒 |
+| 凱蒂（人類） | 3 | 凱蒂_普通、_冷笑、_怒 |
+| 凱蒂（人魚） | 3 | 凱蒂_人魚_普通、_人魚_冷笑、_人魚_怒 |
 | 珊婆（寄居蟹） | 2 | 珊婆_普通、_吐槽 |
 | 珊婆（老人魚，人魚篇用） | 2 | 珊婆_人魚_普通、_人魚_吐槽 |
 | 潮后（人魚篇用） | 1 | 潮后_普通 |
@@ -79,7 +83,7 @@ FORMAT
 - Camera at the character's own eye level, straight on: no looking up or down, no foreshortening, feet flat on an invisible floor.
 - Plain flat solid medium-grey background (#707070). No gradient, no glow, no floor, no cast shadow, no scenery.
 - Neutral, soft white light from the front, so the character fits both day and night backgrounds. No colored rim light.
-- No text, no labels, no name tags, no logos or brand marks on clothing, no watermark, no border.
+- No captions, labels, name tags, clothing logos, watermark or border. The only lettering exception is A-Young's small English tattoo on her left waist.
 
 Reply "OK" and wait for the character description.
 ```
@@ -87,7 +91,7 @@ Reply "OK" and wait for the character description.
 ### B. 換表情（上傳「普通」那張，貼這段，最後接一句表情描述）
 
 ```
-Edit the attached image of this character. Keep everything identical: the same character design, face shape, hair, outfit, accessories, pose, hand positions, size and position on the canvas, line art, colors and the plain grey background. Change ONLY the facial expression to:
+Edit the attached image of this character. Keep everything identical: the same character design, face shape, hair, outfit, accessories, pose, hand positions, size and position on the canvas, line art, colors and the plain grey background. Keep their width, density and color unchanged while allowing their angle to change with the expression; never turn them into thin anime lines. Her face has NO moles or beauty marks. Remove any mole present in an older reference image; this correction is required even when preserving the rest of the design. Change ONLY the facial expression to:
 ```
 
 （例：貼完上面這段，再接 `surprised: eyes wide open, eyebrows raised, mouth slightly open`）
@@ -96,14 +100,17 @@ Edit the attached image of this character. Keep everything identical: the same c
 
 ## 三、驗收清單
 
+- [ ] 主要角色都明顯是符合設定年齡的成年女性，成人肩頸、軀幹、四肢及頭身比例協調；承完保留結實游泳者身形。
+
 - [ ] 1024×1536（寄居蟹是 1024×1024），全身入鏡，頭和腳都沒被切掉
 - [ ] 跟裴柱現的立繪放在一起看：線條粗細、上色方式、眼睛畫法、頭身比一致
 - [ ] 背景是純灰色，沒有影子和光暈
 - [ ] 臉是原創動畫臉，不像照片裡的本人
-- [ ] 沒有文字、商標、浮水印
+- [ ] 沒有說明文字、商標、浮水印；阿英左腰英文刺青是例外
 - [ ] 同一個角色的各個表情：身體、姿勢、大小、位置完全一樣（快速切換著看，只有臉在動）
 - [ ] 小配件每張都在（承完的哨子和毛巾、阿英的刺青、康手上的魷魚串）
-- [ ] 裴柱現的痣每張都在：她的**左眼**（畫面上看是右邊那隻眼睛）、**靠近鼻子那側的眼角**
+- [ ] 裴柱現的眉毛明顯比其他角色更粗、更濃；人類、人魚及各表情都保留相同粗度、濃度與顏色，不變成纖細線眉。
+- [ ] 裴柱現的臉上沒有痣；人類、人魚與所有表情一致。舊參考圖若有痣，須移除。
 - [ ] 裴柱現除了「哭」以外，**都沒有眼淚**；「哭」的眼淚要變成珍珠
 - [ ] 陳伯和麵包店老闆是純深藍色剪影，裡面沒有任何線條或五官
 - [ ] 只看輪廓就認得出身分：陳伯是老漁夫（鴨舌帽、駝背、雨鞋、手背在後面），老闆是麵包師傅（高廚師帽、圍裙、一盤麵包）；兩人並排時輪廓明顯不同
@@ -126,8 +133,8 @@ Edit the attached image of this character. Keep everything identical: the same c
 ### 裴柱現（人類 10 張＋人魚 10 張）
 
 貝貝國第七公主，自稱 35 歲（其實 350 歲）。美得不合理：
-- 藍黑色長直髮垂到腰，光線下泛深藍光澤
-- 深褐色眼睛，眼尾微微上挑，**左眼靠近鼻翼的眼角有一顆小痣**
+- **眉毛明顯比其他角色更粗、更濃**，是她的辨識特徵，讓美貌帶一點英氣；不能畫成其他女性角色常見的纖細線眉。藍黑色長直髮垂到腰，光線下泛深藍光澤
+- 深褐色眼睛，眼尾微微上挑；**臉上沒有痣**，舊參考圖若有痣也要移除。
 - 皮膚白皙，帶一點珍珠光
 - 常穿白色無袖長洋裝，赤腳
 - 人魚形態：湛藍色魚尾，尾鰭半透明淡藍、薄得像紗；上身穿白色無袖上衣
@@ -144,10 +151,11 @@ Edit the attached image of this character. Keep everything identical: the same c
 
 ```
 [Character: Bae Joohyun (裴柱現), human form, neutral expression]
-The attached sheet shows her established design: keep her face, hair, dress and proportions the same, but redraw her as a single, sharper, high-resolution figure.
+Use the attached sheet for her established anime identity and cel style. Redraw one sharp, high-resolution adult figure; follow the written character details wherever the old sheet differs.
 Who: the seventh princess of an undersea mermaid kingdom, living on land in human form; she claims to be 35 (she is really 350). Unreasonably beautiful and supremely confident in her looks; proud, impulsive, stubborn but soft-hearted, with a queenly air.
 Hair: very long, straight blue-black hair falling to the waist, with a deep-blue sheen in the highlights.
-Face: deep-brown eyes with slightly upturned outer corners, long thick lashes, pale coral lips. A small mole at the inner corner of her left eye, right beside the nose (her left eye is the one on the viewer's right); not at the outer corner, and not under the eye.
+Face: noticeably THICKER, FULLER and DARKER eyebrows than those of the other characters in this cast. Her bold, dense brows are a defining identity feature, with clearly visible width and volume, not thin anime lines. Keep them natural and well-shaped, giving her extraordinary beauty a subtly bold, handsome edge; deep-brown eyes with slightly upturned outer corners, defined lashes and natural pale lips. A mature adult face with queenly confidence. Do not thin or lighten her eyebrows to match the other women.
+FACE DETAIL: no moles or beauty marks anywhere on her face. Remove any mole from older reference images in both human and mermaid forms.
 Skin: fair, with a faint pearly sheen, like the inside of a seashell.
 Outfit: a simple white sleeveless long dress with a scoop neckline and a gathered waist, the skirt falling softly to the ankles; barefoot.
 Pose: standing gracefully, one hand lightly tucking her hair behind her ear, the other arm relaxed at her side.
@@ -160,7 +168,9 @@ Expression: calm and composed, a faint, aloof hint of a smile, chin slightly rai
 
 ```
 [Character: Bae Joohyun (裴柱現), mermaid form, neutral expression]
-Same character as the attached image of her in human form: the same face, the small mole at the inner corner of her left eye beside the nose, blue-black hair and pearly skin. Now in her true mermaid form. The attached mermaid sheet shows her established mermaid design.
+Same mature woman as the attached human portrait: preserve her dense eyebrows, subtly bold facial structure, deep-brown slightly upturned eyes, waist-length straight blue-black hair and pearly fair skin. Use the mermaid sheet for the established tail design, following the details below.
+SIGNATURE EYEBROWS: noticeably THICKER, FULLER and DARKER than the other characters' eyebrows, with the same bold width, density and shape as her human form. Not thin anime lines; do not thin or lighten them in mermaid form or in any expression.
+FACE DETAIL: no moles or beauty marks anywhere on her face. Remove any mole from older reference images in both human and mermaid forms.
 Upper body: a white sleeveless top, like the top of her white dress.
 Tail: instead of legs, a long, graceful azure-blue mermaid tail with fine overlapping scales shading from deep blue to lighter blue toward the end, with a silvery shimmer; the tail fin is pale blue, translucent and thin as gauze.
 Pose: upright as if floating in water, one hand resting lightly on her chest, the other arm relaxed close to her body; the tail curving gently to one side, the tail fin near the bottom of the frame.
@@ -176,19 +186,19 @@ Expression: calm and composed, a faint, aloof hint of a smile, chin slightly rai
 
 | 表情 | 描述句 | 人類 | 人魚 |
 |---|---|---|---|
-| 笑 | `a genuine, unguarded smile: eyes softened and slightly curved, mouth open in a happy laugh like a child` | 要 | 要 |
-| 得意 | `smug and proud: chin raised, eyes half-lidded looking down at the viewer, a confident one-sided smirk, like a queen receiving her subjects` | 要 | 備用 |
+| 笑 | `a genuine, unguarded smile: eyes softened and slightly curved, mouth open in a warm natural adult laugh` | 要 | 要 |
+| 得意 | `smug and competitive: half-lidded eyes and a confident one-sided smirk, pleased to have won; keep the original head angle, no tears` | 要 | 備用 |
 | 害羞 | `shy: cheeks and ears flushed pink, eyes looking away to the side, lips pressed into a small pout` | 要 | 要 |
 | 生氣 | `indignant and annoyed: eyebrows drawn down, a haughty glare at the viewer, a small pout` | 要 | 要 |
 | 驚慌 | `panicked, as if caught red-handed: eyes wide with small pupils, eyebrows raised, mouth open` | 要 | 要 |
 | 難過 | `sad: eyebrows tilted up in the middle, the rims of her eyes and the tip of her nose reddened, eyes glistening, but absolutely no tears falling; lips trembling` | 要 | 要 |
 | 恍惚 | `dazed and entranced, as if drunk: eyes half-closed and unfocused, cheeks faintly flushed, lips slightly parted` | 要 | 備用 |
-| 魅惑 | `seductive and dangerous: half-lidded eyes with a faint deep-blue glow in the irises, a slow alluring smile, head tilted slightly` | 要 | 備用 |
+| 魅惑 | `confidently alluring: half-lidded deep-brown eyes and a slow inviting smile; keep the original head angle and eye color, no glow, no tears` | 要 | 備用 |
 | 哭 | `crying with joy and relief, smiling through tears: tears stream from her eyes, and each falling tear turns into a small, round, white pearl` | 備用 | 要 |
 
 ### 孫承完（6 張）
 
-32 歲救生員，主角。栗色蓬鬆長捲髮，褐色眼睛，笑起來眼睛彎彎的。身材結實、游泳練出來的寬肩。值班制服：深藍 POLO 衫、白邊紅色運動短褲，脖子掛哨子和毛巾。害羞時耳朵先紅。
+32 歲白鹽灣救生員，第一人稱主角。栗色中長捲髮蓬蓬地垂過肩膀，褐色眼睛，有開朗少年氣，身材結實。溫柔浪漫、習慣照顧別人，遇險先行動，卻不擅長拒絕或表達自己的需要。制服是深藍 POLO 衫、白邊紅色運動短褲，脖子掛哨子和毛巾；害羞時耳朵先紅。遊戲中只顯示頭像，全身圖用來統一造型與六種表情。
 
 **附圖**：`img/w_wholebody.png`（她現有的設計）、`game/assets/face/孫承完_普通.png`（對話框頭像，臉要跟它一樣）、`img/承完.jpg`（穿搭參考）。
 
@@ -198,12 +208,12 @@ Expression: calm and composed, a faint, aloof hint of a smile, chin slightly rai
 
 ```
 [Character: Son Seungwan (孫承完), neutral expression]
-Attached references: the full-body sheet and the face icon show her established design; match her face, eyes and hair to them exactly. The photo is only an outfit reference.
-Who: a 32-year-old lifeguard in a small seaside town; warm, caring, a natural big-sister type who worries about everyone.
-Hair: long, voluminous, wavy chestnut-brown hair falling past the shoulders, with soft wispy bangs.
-Face: warm brown eyes that curve into crescents when she smiles; a friendly, gentle face.
+Use the full-body sheet and face icon for her established anime identity and style; correct any conflicting hair length or uniform details according to the text below. The photo is only an outfit reference.
+Who: a mature 32-year-old female lifeguard in White Salt Bay; warm, romantic, empathetic and protective, with cheerful, slightly boyish charm. She worries about everyone while forgetting herself, and is shy about expressing her own wishes.
+Hair: fluffy, medium-length chestnut-brown curls falling just past her shoulders; not waist-length, not straight, not a ponytail.
+Face: warm brown eyes, a friendly adult face with lively boyish charm; keep her ears visible enough to show her characteristic blush.
 Body: fit, athletic swimmer's build with slightly broad shoulders; healthy, lightly tanned skin.
-Outfit (lifeguard uniform): a navy-blue short-sleeved polo shirt, cropped at the waist, with buttons at the collar and no logo; red athletic running shorts with white piping trim; a silver whistle on a red lanyard around her neck; a white towel draped around her neck; barefoot.
+Outfit (lifeguard uniform): a regular-length navy-blue short-sleeved polo shirt covering the waist, with collar buttons and no logo; red athletic shorts with white piping; a silver whistle on a red neck lanyard and a white towel draped around her neck, both unobscured above the waist; barefoot as a beach-duty styling choice.
 Pose: standing relaxed, one hand on her hip, the other arm hanging naturally.
 Expression: a gentle, friendly, closed-mouth smile.
 ```
@@ -220,10 +230,10 @@ Expression: a gentle, friendly, closed-mouth smile.
 
 ### 阿英（4 張）
 
-31 歲，海邊酒吧「退潮」老闆，承完的死黨。高個子，黑色高馬尾，眼神銳利，左手腕有一圈浪花刺青，戒菸中所以一直含薄荷糖。冷靜毒舌，其實最護承完。
-穿搭參考照片：芥末黃無袖上衣、海軍藍白邊短褲。另外加一件酒吧老闆的黑色短圍裙。
+31 歲，海邊酒吧「退潮」老闆，承完從國中到現在的死黨。高個子、俏麗短髮、銳利眼神，**左側腰間有英文刺青**。冷靜毒舌、觀察力極強，表面冷淡，其實最護承完，也知道阿嬤傳下來的海上傳說。
+穿搭補充：芥末黃無袖短上衣、海軍藍白邊短褲、黑涼鞋，左側下擺露出一小段腰線。不要遮住刺青的圍裙、手腕浪花刺青或薄荷糖罐。刺青文字尚未設定，先用低辨識度的小型英文手寫字，不自行加入有劇情含義的標語；定稿後各表情保持一致。
 
-> 照片裡的頭髮是放下來的，這裡照角色設定畫成**高馬尾**。如果想照照片畫，把 Hair 那一行改掉就好。
+> 照片只參考穿搭配色，髮型依設定畫成短髮。英文刺青是共用「禁止文字」規則的唯一角色造型例外，位置在角色自己的左腰，正面圖為畫面右側。
 
 **附圖**：`img/阿英.jpg`
 
@@ -232,13 +242,14 @@ Expression: a gentle, friendly, closed-mouth smile.
 ```
 [Character: A-Young (阿英), neutral expression]
 The attached photo is only an outfit and color reference; draw an original anime face.
-Who: a 31-year-old owner of a small seaside bar; tall, cool-headed, sharp-tongued and very observant, secretly the most protective of her friends.
-Hair: straight black hair tied in a high ponytail, a few loose strands framing her face.
+Who: a mature 31-year-old woman who owns the seaside bar "Low Tide", Seungwan's closest friend since middle school; tall, cool-headed, blunt and exceptionally observant, outwardly reserved but fiercely protective. Watchful rather than villainous.
+Hair: neat, chic short dark hair ending around the jaw and nape, with a clean silhouette; no ponytail, no long hair.
 Face: sharp, narrow, observant dark-brown eyes, defined eyebrows, a cool and composed look.
 Body: tall and slim with long legs; light skin.
-Outfit: a mustard-yellow sleeveless sporty top; navy shorts with white side stripes; a short black bar apron tied around the waist, with a small round tin of mints peeking out of its pocket; simple black sandals. A thin ring-shaped tattoo of small stylized waves around her left wrist.
-Pose: standing straight with her arms loosely crossed, left forearm on top so the wave tattoo on the left wrist is clearly visible.
-Expression: cool and unreadable, mouth neutral.
+Outfit: a mustard-yellow sleeveless top ending just above the waist, navy shorts with white side stripes and simple black sandals. Leave a small section of her own left waist exposed. No apron covering this area, no mint tin.
+Signature detail: a small English-script tattoo on her own LEFT SIDE OF THE WAIST (viewer RIGHT in a frontal view), never on the wrist or arm. The wording is unspecified: use subtle, minimally legible English handwriting without inventing a slogan. This tattoo is the only permitted lettering.
+Pose: a steady slight three-quarter turn revealing her left waist, arms relaxed close to her body and hands clear of the tattoo; compact silhouette.
+Expression:smile, mouth neutral.
 ```
 
 | 檔名 | 描述句 |
@@ -249,7 +260,7 @@ Expression: cool and unreadable, mouth neutral.
 
 ### 康（3 張）
 
-32 歲，衝浪店老闆。健康的小麥色皮膚、圓臉，**淺棕色頭髮綁成一顆包包頭**。一年四季穿花襯衫和夾腳拖，手上永遠拿著吃的。熱情、呆呆的、很愛吃。
+32 歲女性、衝浪店老闆。圓臉，**淺棕色頭髮隨手綁成一顆包包頭**。一年四季穿花襯衫和夾腳拖，手上幾乎永遠拿著吃的。熱情天然呆、反應慢半拍，是露營團的氣氛擔當；暗戀阿英多年，心事常直接寫在臉上。小麥膚色與下方穿搭配色是本組立繪的美術補充。
 穿搭：花襯衫敞開，裡面是照片裡的粉白直條紋細肩帶上衣，深色牛仔褲加夾腳拖，手上拿一串烤魷魚。
 
 **附圖**：`img/康.jpg`
@@ -259,22 +270,22 @@ Expression: cool and unreadable, mouth neutral.
 ```
 [Character: Kang (康), neutral expression]
 The attached photo is only an outfit and color reference; ignore the hairstyle in the photo and draw an original anime face.
-Who: a 32-year-old surf shop owner; cheerful, a little airheaded, always hungry, the mood-maker of her group of friends.
+Who: a mature 32-year-old WOMAN who owns a surf shop; enthusiastic, naturally goofy, a beat slow to react and always finding something to eat. The camping group's cheerful mood-maker, with an obvious long-standing crush on A-Young. Clearly an adult woman, not a teenage girl or a man.
 Hair: light brown hair tied up into a single round bun on top of her head, casual and slightly messy, with a few loose wisps at the sides and nape and soft side-swept bangs.
-Face: a round face, round friendly light-brown eyes, rosy cheeks.
-Body: average height, healthy sun-tanned (wheat-colored) skin.
-Outfit: an open short-sleeved Hawaiian shirt with a bold hibiscus print (red, orange and teal flowers on cream) worn over a pink-and-white vertical-striped camisole top; dark-wash jeans rolled up at the ankles; flip-flops; a beaded bracelet on her right wrist.
+Face:  round friendly light-brown eyes.
+Body: average height, slim with long legs.
+Outfit: a bold hibiscus print (red, orange and teal flowers on cream) worn over a pink-and-white vertical-striped camisole top; dark-wash jeans rolled up at the ankles; flip-flops; a beaded bracelet on her right wrist.
 Props: she holds a skewer of grilled squid in her right hand, at chest height.
 Pose: standing relaxed, weight on one leg, the other hand hanging loosely.
-Expression: an easygoing, slightly dazed smile, cheeks a little puffed as if she is chewing.
+Expression: a friendly, slightly absent-minded smile with a delayed-reaction look, cheeks softly rounded as if enjoying a bite; warm and endearing.
 ```
 
 | 檔名 | 描述句 |
 |---|---|
 | 康_大笑 | `laughing out loud: a huge open-mouthed laugh, eyes squeezed shut into arcs, cheeks rosy` |
-| 康_慌張 | `panicked and flustered: eyes wide and round, eyebrows raised, mouth open in a wobbly "eek", a classic 1990s-anime sweat drop beside her head` |
+| 康_慌張 | `panicked and flustered: eyes wide and round, eyebrows raised, mouth open in a wobbly "eek", a flustered blush as if A-Young has caught her sneaking food; keep hands, prop and pose unchanged` |
 
-### 澪（人類 3 張＋人魚 3 張）
+### 凱蒂（人類 3 張＋人魚 3 張）
 
 貝貝國第二公主，裴柱現的二姊。銀白色直長髮，冷豔，跟裴柱現長得很像但線條更銳利，眼神像冰。
 
@@ -284,14 +295,14 @@ Expression: an easygoing, slightly dazed smile, cheeks a little puffed as if she
 
 **附圖**：`img/i_wholebody_human.png`（妹妹，讓 AI 畫出家族相似的臉）
 
-**澪_普通（人類形態）**
+**凱蒂_普通（人類形態）**
 
 ```
-[Character: Rei (澪), human form, neutral expression]
+[Character: Katie (凱蒂), human form, neutral expression]
 Who: the second princess of an undersea mermaid kingdom, here in human form; proud, cold and severe, though deep down she is the sister who loves the heroine most.
-Looks: she clearly resembles her younger sister, the woman with long blue-black hair in the attached sheet (same family face), but with sharper lines: a sharper jaw, narrower eyes, thinner and straighter eyebrows.
+Looks: she clearly resembles her younger sister, the woman with long blue-black hair in the attached sheet (same family face), but with round lines, thinner and straighter eyebrows.
 Hair: very long, straight silver-white hair falling to the waist, with cool blue-grey shading and sharp highlights.
-Eyes: pale, icy grey-blue eyes with a cold, piercing gaze.
+Eyes: purple eyes with a cold, piercing gaze.
 Skin: very pale, almost translucent, with a faint pearly sheen.
 Outfit: a sleek sleeveless long dress in deep midnight blue with a high neckline, falling straight to the ankles; barefoot; a single small pearl earring.
 Pose: standing very straight, chin slightly raised, hands resting one over the other in front of her waist.
@@ -300,16 +311,16 @@ Expression: cold and expressionless, looking down her nose.
 
 | 檔名 | 描述句 |
 |---|---|
-| 澪_冷笑 | `a cold sneer: one corner of the mouth curled up, eyes narrowed with contempt` |
-| 澪_怒 | `furious: eyebrows sharply lowered, eyes blazing, teeth slightly bared` |
+| 凱蒂_冷笑 | `a cold sneer: one corner of the mouth curled up, eyes narrowed with contempt` |
+| 凱蒂_怒 | `furious: eyebrows sharply lowered, eyes blazing, teeth slightly bared` |
 
-**澪_人魚_普通（人魚形態）**
+**凱蒂_人魚_普通（人魚形態）**
 
-附圖：上面畫好的 `澪_普通`、`img/i_wholebody_mermaid.png`（妹妹的人魚姿勢）
+附圖：上面畫好的 `凱蒂_普通`、`img/i_wholebody_mermaid.png`（妹妹的人魚姿勢）
 
 ```
-[Character: Rei (澪), mermaid form, neutral expression]
-Same character as the attached image of Rei in human form: the same face, silver-white hair, icy grey-blue eyes and pale pearly skin. Now in her true mermaid form. Use the attached mermaid sheet of her younger sister as the reference for the mermaid pose and proportions.
+[Character: Katie (凱蒂), mermaid form, neutral expression]
+Same character as the attached image of Katie in human form: the same face, silver-white hair, icy grey-blue eyes and pale pearly skin. Now in her true mermaid form. Use the attached mermaid sheet of her younger sister as the reference for the mermaid pose and proportions.
 Upper body: a sleeveless high-neck top in deep midnight blue.
 Tail: instead of legs, a long and powerful silver mermaid tail with a faint blue sheen and fine overlapping scales, noticeably larger and longer than her sister's; it ends in a large tail fin that is translucent silver-white with sharp, blade-like edges.
 Pose: upright as if floating in water, the tail curving gently to one side, the tail fin near the bottom of the frame; hands resting one over the other in front of her waist.
@@ -318,8 +329,8 @@ Expression: cold and expressionless, looking down her nose.
 
 | 檔名 | 描述句 |
 |---|---|
-| 澪_人魚_冷笑 | `a cold sneer: one corner of the mouth curled up, eyes narrowed with contempt` |
-| 澪_人魚_怒 | `furious: eyebrows sharply lowered, eyes blazing, teeth slightly bared` |
+| 凱蒂_人魚_冷笑 | `a cold sneer: one corner of the mouth curled up, eyes narrowed with contempt` |
+| 凱蒂_人魚_怒 | `furious: eyebrows sharply lowered, eyes blazing, teeth slightly bared` |
 
 ### 珊婆（寄居蟹 2 張＋老人魚 2 張）
 

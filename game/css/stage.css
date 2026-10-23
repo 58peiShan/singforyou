@@ -285,7 +285,6 @@
   transition: opacity .2s;
 }
 #nameplate.on { opacity: 1; }
-#textbox.has-face #nameplate { left: calc(18px + var(--face-size) + 20px); }
 
 /* 主角頭像：金框圓章 */
 #face {
@@ -306,7 +305,10 @@
   border-radius: 50%;
   overflow: hidden;
   border: 4px solid transparent;
-  background: linear-gradient(180deg, #24427a, #0f2347) padding-box, var(--rim) border-box;
+  background:
+    url(ui/paper.svg) padding-box,
+    radial-gradient(120% 140% at 50% 30%, var(--paper-hi) 0%, var(--paper) 58%, #e8d4a6 100%) padding-box,
+    var(--rim) border-box;
   box-shadow: 0 0 0 1.5px var(--gold-edge), inset 0 0 0 1.5px var(--gold-edge), 0 6px 14px rgba(40, 24, 4, .45);
 }
 .face-av img, .face-av svg { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 50%; }
@@ -617,10 +619,10 @@
   }
   #textbox { --frame-w: 32px; padding: 30px 22px 22px; }
   #textbox.has-face { padding-left: 22px; padding-top: 38px; }
-  #face { left: 14px; top: 0; bottom: auto; transform: translateY(-62%) scale(.9); }
+  /* 頭像放右上方，讓所有角色的姓名牌都能固定在左上角。 */
+  #face { left: auto; right: 14px; top: 0; bottom: auto; transform: translateY(-62%) scale(.9); }
   #face.on { transform: translateY(-62%); }
   #nameplate { left: 10px; }
-  #textbox.has-face #nameplate { left: calc(14px + var(--face-size) + 6px); transform: translateY(-50%); }
   .cg-view .cg-main { top: 4%; bottom: calc(var(--tb-h) + var(--tb-bottom) + 2%); left: 2%; right: 2%; }
   .cg-view .cg-main img { object-fit: contain; }
   .cg-view .cg-main .cg-card { width: 100%; height: auto; aspect-ratio: 16 / 9; border-radius: 10px; box-shadow: 0 16px 50px rgba(0, 0, 0, .55); }
@@ -642,7 +644,6 @@
   #textbox.has-face { padding-left: calc(28px + var(--face-size) + 14px); }
   #face { left: 16px; bottom: 12px; }
   #nameplate { left: 12px; }
-  #textbox.has-face #nameplate { left: calc(12px + var(--face-size) + 14px); }
   #text { line-height: 1.7; }
   #mode-badge { left: calc(14px + var(--safe-l)); transform: none; top: calc(26px + var(--safe-t)); }
   #choices { gap: 6px; }

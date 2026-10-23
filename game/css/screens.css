@@ -460,7 +460,6 @@
   color: var(--ink-2);
 }
 .gal-item .lock::before { content: ""; width: 18px; height: 20px; background: url(ui/lock.svg) center / contain no-repeat; }
-.gal-item .lock .no { font-size: 20px; font-weight: 700; letter-spacing: .15em; color: var(--ink); font-family: var(--font-serif); }
 .gal-count { font-family: var(--font-sans); font-size: 13.5px; color: var(--ink-2); letter-spacing: .1em; }
 
 .viewer { position: absolute; inset: 0; background: #000; cursor: zoom-out; animation: ov-in .3s ease; }

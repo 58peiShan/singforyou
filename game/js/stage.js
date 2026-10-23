@@ -22,7 +22,7 @@
   // 真實立繪（全身圖）在舞台上的框法：頭頂離舞台頂端 3%，腰（圖高的 36% 處）對齊對話框上緣，腿在畫面外。
   // 想露出更多身體就把 REAL_WAIST 調大（例如 0.5 = 切到大腿）。
   var REAL_TOP = 0.03;
-  var REAL_WAIST = 0.36;
+  var REAL_WAIST = 0.5;
 
   VN.layoutPositions = function (n, portrait) {
     if (n <= 0) return [];

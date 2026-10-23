@@ -82,6 +82,10 @@ node tools/build.js --out <檔案>          # 輸出到別的檔案
 
 立繪例外：AI 畫好的灰底原圖放進 `img/立繪/`（檔名像 `阿英_笑.png`），**雙擊 `cut_sprites.bat`** 會自動去背、放進 `game/assets/sprites/`，並重新建置。
 
+去背也會清理髮絲間靠近外輪廓的小灰底，執行時會顯示「髮絲小縫隙」數量。若個別圖片的灰色衣料細節被誤清，可在命令列執行 `cut_sprites.bat 阿英 --hair-gap-distance 0`，僅重新處理該角色並停用小縫隙清理。仍有較深的髮絲縫隙殘留時，可試 `cut_sprites.bat 阿英 --hair-gap-distance 48`；數值越大，越可能影響輪廓內的灰色細節，處理後請檢查。原始圖片不會修改。
+
+康與阿英另有針對目前造型的局部殘灰修正，涵蓋髮絲、魷魚觸鬚及手與大腿間的縫隙，執行時顯示「局部殘灰清理」。範圍定義在 `tools/cut_sprites.py` 的 `CLEANUP_REGIONS`；日後若更換姿勢或構圖，須重新核對這些範圍。`--hair-gap-distance 0` 也會停用局部修正。
+
 | 類型 | 放在 | 檔名 |
 |---|---|---|
 | 背景 | `game/assets/bg/` | `<背景名稱>.jpg`（或 .png / .webp），例：`白鹽灣沙灘・黃昏.jpg` |

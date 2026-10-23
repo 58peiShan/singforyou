@@ -53,7 +53,7 @@
     '阿英': '#3f9389',
     '康': '#e08a3a',
     '珊婆': '#d9668c',
-    '澪': '#6f92b8',
+    '凱蒂': '#6f92b8',
     '潮后': '#8e3fa6',
   };
   VN.charColor = function (name) {
@@ -540,7 +540,7 @@
           '<ellipse cx="316" cy="388" rx="18" ry="16" fill="url(#s' + u + ')"/>');
       },
     },
-    '澪': {
+    '凱蒂': {
       hairA: '#f4f6fb', hairB: '#a9b4c9', skinA: '#f9f8fb', skinB: '#e0e3ee', clothA: '#24405f', clothB: '#11223a', scale: 1.02,
       draw: function (u) {
         return '<path d="M200,130 C122,130 106,200 108,280 L100,600 L300,600 L292,280 C294,200 278,130 200,130 Z" fill="url(#h' + u + ')"' + RIM + '/>' +
@@ -712,7 +712,6 @@
     card.appendChild(el('div.frame'));
     if (!opts.noLabel) {
       card.appendChild(el('div.label', null, [
-        el('span.num', { text: 'CG ' + id }),
         el('span.name', { text: title || '' }),
         opts.mini ? null : el('span.deco', { html: '<svg viewBox="0 0 240 10" preserveAspectRatio="none" style="width:100%;height:100%"><path d="M0,5 C20,0 40,10 60,5 S100,0 120,5 S160,10 180,5 S220,0 240,5" stroke="#9a6a1c" stroke-width="1.5" fill="none"/><circle cx="120" cy="5" r="3" fill="#9a6a1c"/></svg>' }),
       ]));
